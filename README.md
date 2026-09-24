@@ -94,7 +94,7 @@ Register in `~/.config/opencode/opencode.jsonc`:
 {
   "$schema": "https://opencode.ai/config.json",
   "skills": {
-    "paths": ["/home/hautly/Awesome-Bug-Bounty/skills"]
+    "paths": ["~/Awesome-Bug-Bounty/skills"]
   },
   "references": {
     "@awesome-bb-writeups": "https://github.com/devanshbatham/Awesome-Bugbounty-Writeups",
