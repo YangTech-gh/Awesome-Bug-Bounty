@@ -9,7 +9,7 @@
 <br/>
 
 [![Skill](https://img.shields.io/badge/opencode-skill-1f6feb?style=for-the-badge&logo=opencode&logoColor=white)](#-quick-start)
-[![skills CLI](https://img.shields.io/badge/skills-npx%20skills%20ready-1f6feb?style=for-the-badge)](https://skills.sh/yangtech-gh/awesome-bug-bounty/awesome-bug-bounty)
+[![skills.sh](https://skills.sh/b/YangTech-gh/Awesome-Bug-Bounty)](https://skills.sh/yangtech-gh/awesome-bug-bounty/awesome-bug-bounty)
 [![Vuln classes](https://img.shields.io/badge/vuln_classes-36-0969da?style=for-the-badge)](#-vulnerability-coverage)
 [![Source repos](https://img.shields.io/badge/source_repos-12-1a7f37?style=for-the-badge)](#knowledge-sources--fallback-references)
 [![Payload cats](https://img.shields.io/badge/payload_categories-64%2B-d29922?style=for-the-badge)](#-payload--bypass-cheat-sheet)
@@ -48,6 +48,9 @@
 The repo layout (`skills/awesome-bug-bounty/SKILL.md` + bundled `knowledge/`) is discovered by the [skills CLI](https://github.com/vercel-labs/skills) and installs into OpenCode, Claude Code, Codex, Cursor, and [70+ agents](https://github.com/vercel-labs/skills#supported-agents). Also listed on [skills.sh](https://skills.sh/yangtech-gh/awesome-bug-bounty/awesome-bug-bounty).
 
 ```bash
+# One-liner (pinned skill — share this)
+npx skills@latest add YangTech-gh/Awesome-Bug-Bounty@awesome-bug-bounty
+
 # Preview what's in the repo
 npx skills@latest add YangTech-gh/Awesome-Bug-Bounty --list
 
