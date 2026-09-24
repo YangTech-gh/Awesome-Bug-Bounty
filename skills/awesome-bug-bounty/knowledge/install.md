@@ -18,6 +18,12 @@ go version
 # Build base (Debian/Ubuntu/Kali)
 sudo apt update && sudo apt install -y git curl jq unzip python3-pip pipx nmap
 
+# Build base (Arch/CachyOS)
+sudo pacman -Sy --needed --noconfirm go python-pipx nmap sqlmap git curl jq unzip
+# No-sudo fallback (any distro): fetch the Go toolchain to ~/.local from https://go.dev/dl/
+# (e.g. go1.27.x linux-amd64), then `export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"`
+# and persist `~/go/bin` in ~/.zshrc / ~/.bashrc — every `go install` below works unprivileged.
+
 # Optional: Homebrew (macOS/Linux) — https://brew.sh
 # Optional: Rust (cargo installs) — https://rustup.rs
 ```
@@ -59,8 +65,8 @@ pipx install httpie   # optional manual requests
 # Crawl helpers (small go scripts)
 go install -v github.com/hakluke/hakrawler@latest
 
-# Nuclei templates
-nuclei -update-templates
+# Nuclei templates (if -update-templates hangs/times out, seed via git and scan with -duc)
+nuclei -update-templates || git clone --depth 1 https://github.com/projectdiscovery/nuclei-templates.git ~/nuclei-templates
 ```
 
 **Wordlists:**
@@ -81,12 +87,14 @@ sudo apt install -y sqlmap          # or: git clone https://github.com/sqlmappro
 go install -v github.com/hahwul/dalfox/v2@latest
 
 # Secrets / git exposure
-go install -v github.com/trufflesecurity/trufflehog/v3@latest
-go install -v github.com/gitleaks/gitleaks/v8@latest
+go install -v github.com/zricethezav/gitleaks/v8@latest
+# trufflehog has `replace` directives — `go install` fails. Use the release binary or Docker:
+# curl -sL https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Linux_x86_64.tar.gz | tar -xz -C ~/.local/bin
 # git-dumper: pipx install git-dumper
 
-# DNS/OAST (blind SSRF/XXE callbacks)
-go install -v github.com/projectdiscovery/interactsh/cmd/interactsh@latest
+# DNS/OAST (blind SSRF/XXE callbacks) — repo ships -client and -server (no bare cmd/interactsh)
+go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-server@latest
 ```
 
 ## 3. Proxies & manual testing
@@ -112,8 +120,9 @@ mitmproxy --listen-port 8080
 
 ```bash
 # Release archive ships `obscura` + `obscura-worker` — keep both in the same dir
+# Asset naming is arch-first: obscura-x86_64-linux[-stealth].tar.gz (aarch64/macOS builds too)
 # https://github.com/h4ckf0r0day/obscura/releases  (pick your OS/arch)
-curl -sL https://github.com/h4ckf0r0day/obscura/releases/latest/download/obscura-linux-x86_64.tar.gz | tar -xz -C ~/.local/bin
+curl -sL https://github.com/h4ckf0r0day/obscura/releases/latest/download/obscura-x86_64-linux-stealth.tar.gz | tar -xz -C ~/.local/bin
 chmod +x ~/.local/bin/obscura ~/.local/bin/obscura-worker
 
 obscura fetch https://example.com          # one-shot render
@@ -137,7 +146,7 @@ python3 bizlogic_scanner.py           # prompts: base URL, rate, max pages
 | Server | Install |
 |---|---|
 | **hexstrike-ai** | `git clone https://github.com/0x4m4/hexstrike-ai && cd hexstrike-ai && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt` → `python3 hexstrike_server.py --port 8888` (needs `HEXSTRIKE_API_KEY` env — see README) |
-| **pd-tools-mcp** | Requires §1 tools on PATH → `git clone https://github.com/intelligent-ears/pd-tools-mcp && cd pd-tools-mcp && npm install && npm run build` → register stdio cmd per README |
+| **pd-tools-mcp** | Requires §1 tools on PATH → `git clone https://github.com/intelligent-ears/pd-tools-mcp && cd pd-tools-mcp && npm install && npm run build` → register stdio cmd per README (build emits `build/index.js`, **not** `dist/` — register that path) |
 | **mcp-bb (mcp_bug)** | `git clone https://github.com/narkytypey/mcp_bug` → **→ repo README** (Go build + program profiles) |
 | **BugHound-MCP** | `git clone https://github.com/binderlabs/BugHound-MCP` → **→ repo README** (`pip`/`uv` install; 29 techniques run with zero external tools, then add §1/§2 binaries for full 45) |
 | **MoonMCP** | `git clone https://github.com/Moonwuk/MoonMCP` → **→ repo README** (stdlib-first; wraps §1 tools when present) |
@@ -150,7 +159,7 @@ python3 bizlogic_scanner.py           # prompts: base URL, rate, max pages
 "mcp": {
   "pd-tools": {
     "type": "local",
-    "command": ["node", "/path/to/pd-tools-mcp/dist/index.js"],
+    "command": ["node", "/path/to/pd-tools-mcp/build/index.js"],
     "enabled": true
   }
 }
@@ -185,6 +194,9 @@ python3 bizlogic_scanner.py           # prompts: base URL, rate, max pages
 
 ## 9. One-shot core stack (copy block)
 
+Arch/CachyOS first: `sudo pacman -Sy --needed --noconfirm go python-pipx nmap sqlmap`
+(Debian/Ubuntu/Kali: §0 apt line). Then:
+
 ```bash
 mkdir -p ~/go/bin && export PATH="$PATH:$HOME/go/bin"
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
@@ -201,8 +213,9 @@ go install -v github.com/tomnomnom/anew@latest
 go install -v github.com/lc/gau/v2/cmd/gau@latest
 go install -v github.com/ffuf/ffuf/v2@latest
 go install -v github.com/hahwul/dalfox/v2@latest
-go install -v github.com/gitleaks/gitleaks/v8@latest
-go install -v github.com/trufflesecurity/trufflehog/v3@latest
+go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+go install -v github.com/zricethezav/gitleaks/v8@latest
+# trufflehog: release binary (see §2) — `go install` fails on replace directives
 sudo apt install -y nmap sqlmap feroxbuster gobuster
 pipx install wafw00f arjun uro
 nuclei -update-templates
@@ -273,11 +286,13 @@ subfinder -version && httpx -version && nuclei -version
 `~/.config/opencode/opencode.jsonc` — add only the servers you'll use; disable the rest (`"enabled": false`). Pattern: `"type": "local"` + `command` array (never a string).
 
 ```jsonc
+// Paths below use $HOME — replace with your actual checkout dir if different
+// (e.g. $HOME/tools/pd-tools-mcp). Never hardcode /home/<user> or /opt/.
 "mcp": {
-  // Recon hands (needs §1 binaries on PATH)
-  "pd-tools":   { "type": "local", "command": ["node", "/opt/pd-tools-mcp/dist/index.js"], "enabled": true },
+  // Recon hands (needs §1 binaries on PATH; build emits build/index.js, not dist/)
+  "pd-tools":   { "type": "local", "command": ["node", "$HOME/tools/pd-tools-mcp/build/index.js"], "enabled": true },
   // Broad tool wrapper (argv per its README; Railway-style setups use hexstrike_mcp.py over stdio)
-  "hexstrike":  { "type": "local", "command": ["python3", "/opt/hexstrike-ai/hexstrike_mcp.py"], "enabled": false,
+  "hexstrike":  { "type": "local", "command": ["python3", "$HOME/tools/hexstrike-ai/hexstrike_mcp.py"], "enabled": false,
                   "environment": { "HEXSTRIKE_API_KEY": "${env:HEXSTRIKE_API_KEY}" } },
   // Agent browser (SPA render, DOM XSS confirm)
   "obscura":    { "type": "local", "command": ["obscura", "mcp", "--stealth"], "enabled": true },
@@ -297,6 +312,42 @@ Rules of thumb:
 3. Prefer **stdio** over HTTP transports; if HTTP, bind `127.0.0.1` and set origin allowlists (Obscura `OBSCURA_MCP_ALLOWED_ORIGINS`).
 4. Restart opencode after editing `opencode.jsonc` (no hot reload).
 5. Verify with the MCP section in opencode's TUI; run `external_tools` / `check_tool_coverage` / `ptai tools install --tier core` from the server itself to confirm binaries resolve.
+
+### Freebuff / Codebuff (`mcp.json`)
+
+Freebuff reads `mcp.json` (Claude format) from `{cwd}/.agents/mcp.json` (project),
+`{cwd}/../.agents/mcp.json` (monorepo parent), then `~/.agents/mcp.json` (global).
+Write the same servers there so both agents share one MCP surface:
+
+```json
+{
+  "mcpServers": {
+    "pd-tools": { "command": "node", "args": ["$HOME/tools/pd-tools-mcp/build/index.js"] },
+    "obscura":  { "command": "obscura", "args": ["mcp", "--stealth"] }
+  }
+}
+```
+
+### Smoke test (any stdio MCP server)
+
+```bash
+python3 - <<'PY'
+import json, os, subprocess
+def smoke(name, cmd):
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+    p.stdin.write(json.dumps({"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}})+"\n"); p.stdin.flush()
+    p.stdout.readline()
+    p.stdin.write(json.dumps({"jsonrpc":"2.0","method":"notifications/initialized"})+"\n"); p.stdin.flush()
+    p.stdin.write(json.dumps({"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}})+"\n"); p.stdin.flush()
+    t = json.loads(p.stdout.readline())
+    print(name, "OK:", [x["name"] for x in t["result"]["tools"]][:8]); p.kill()
+smoke("pd-tools", ["node", os.path.expandvars("$HOME/tools/pd-tools-mcp/build/index.js")])
+smoke("obscura", ["obscura","mcp","--stealth"])
+PY
+```
+Expect `pd-tools` → subfinder/dnsx/naabu/httpx/katana/nuclei/bug_bounty_workflow,
+`obscura` → ~37 `browser_*` tools. A banner line on stdout (pd-tools prints
+"running on stdio") is harmless — the JSON-RPC lines still parse.
 
 ## 13. Setup done when…
 
