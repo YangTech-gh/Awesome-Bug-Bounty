@@ -67,7 +67,15 @@ Later: `npx skills update` · `npx skills list` · `npx skills remove awesome-bu
 > [!NOTE]
 > `npx skills` installs the skill package only. The optional `@reference` aliases (deep fallback into 12 source repos) still need the opencode `references` block below.
 
-### Option B — manual opencode registration
+### Option B — Claude Code plugin
+
+```bash
+# In Claude Code
+/plugin marketplace add YangTech-gh/Awesome-Bug-Bounty
+/plugin install awesome-bug-bounty@awesome-bug-bounty
+```
+
+### Option C — manual opencode registration
 
 <details open>
 <summary><b>Install the skill in opencode</b> — click to collapse</summary>

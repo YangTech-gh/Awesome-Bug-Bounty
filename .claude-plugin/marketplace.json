@@ -1,0 +1,24 @@
+{
+  "name": "awesome-bug-bounty",
+  "owner": {
+    "name": "YangTech-gh",
+    "url": "https://github.com/YangTech-gh"
+  },
+  "metadata": {
+    "description": "Bug bounty and authorized security research skills"
+  },
+  "plugins": [
+    {
+      "name": "awesome-bug-bounty",
+      "source": "./",
+      "description": "Bug bounty hunting skill: recon, vuln playbooks, payloads, business logic, tools. Authorized testing only.",
+      "version": "1.0.0",
+      "homepage": "https://github.com/YangTech-gh/Awesome-Bug-Bounty",
+      "repository": "https://github.com/YangTech-gh/Awesome-Bug-Bounty",
+      "license": "MIT",
+      "keywords": ["bug-bounty", "security", "agent-skills"],
+      "category": "security",
+      "skills": ["./skills"]
+    }
+  ]
+}

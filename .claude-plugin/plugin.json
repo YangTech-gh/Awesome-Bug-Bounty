@@ -1,0 +1,25 @@
+{
+  "name": "awesome-bug-bounty",
+  "displayName": "Awesome Bug Bounty",
+  "version": "1.0.0",
+  "description": "Bug bounty hunting skill: recon methodology, vuln playbooks, payloads, business logic, tools, and install guides with source-repo fallbacks. Authorized testing only.",
+  "author": {
+    "name": "YangTech-gh",
+    "url": "https://github.com/YangTech-gh"
+  },
+  "homepage": "https://github.com/YangTech-gh/Awesome-Bug-Bounty",
+  "repository": "https://github.com/YangTech-gh/Awesome-Bug-Bounty",
+  "license": "MIT",
+  "keywords": [
+    "bug-bounty",
+    "security",
+    "recon",
+    "xss",
+    "ssrf",
+    "idor",
+    "payloads",
+    "agent-skills"
+  ],
+  "category": "security",
+  "skills": "./skills"
+}
