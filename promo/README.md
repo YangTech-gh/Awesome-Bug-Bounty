@@ -17,6 +17,9 @@ Canonical links
 - [ ] Submit Show HN (`hn-show.md`) — wait for daytime US hours
 - [ ] Post r/netsec + r/bugbounty (`reddit.md`) — follow each sub's self-promo rules
 - [ ] LinkedIn post (`linkedin.md`)
-- [ ] Open PRs to awesome lists (bodies in `submissions/`)
+- [x] Open PRs to awesome lists:
+  - https://github.com/karanb192/awesome-claude-skills/pull/324
+  - https://github.com/heilcheng/awesome-agent-skills/pull/526
+  - https://github.com/VoltAgent/awesome-agent-skills/pull/1097
 - [ ] Share in Discord/Slack communities you already belong to (no drive-by spam)
 - [ ] After installs accumulate: recheck `npx skills find awesome-bug-bounty`
