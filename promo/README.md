@@ -21,5 +21,14 @@ Canonical links
   - https://github.com/karanb192/awesome-claude-skills/pull/324
   - https://github.com/heilcheng/awesome-agent-skills/pull/526
   - https://github.com/VoltAgent/awesome-agent-skills/pull/1097
+  - https://github.com/BehiSecc/awesome-claude-skills/pull/761
+  - https://github.com/skillmatic-ai/awesome-agent-skills/pull/184
+  - https://github.com/LLMSecurity/awesome-agent-skills-security/pull/73
+  - https://github.com/djadmin/awesome-bug-bounty/pull/84
+- [x] agentskill.sh imported (security score 100)
+- [x] MIT LICENSE (GitHub license detection)
+- [x] Release v1.0.0
+- [x] skills.sh indexing request: vercel-labs/skills#2291
+- [ ] hesreallyhim/awesome-claude-code — wait until repo is ≥14 days old, then human web form only
 - [ ] Share in Discord/Slack communities you already belong to (no drive-by spam)
 - [ ] After installs accumulate: recheck `npx skills find awesome-bug-bounty`
