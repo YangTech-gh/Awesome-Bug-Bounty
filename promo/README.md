@@ -33,3 +33,5 @@ Canonical links
 - [ ] hesreallyhim/awesome-claude-code — wait until repo is ≥14 days old, then human web form only
 - [ ] Share in Discord/Slack communities you already belong to (no drive-by spam)
 - [ ] After installs accumulate: recheck `npx skills find awesome-bug-bounty`
+- [ ] skillsdirectory.com — requires GitHub OAuth sign-in (manual)
+- [ ] claudeskills.info — requires login (manual)
