@@ -26,6 +26,7 @@ Canonical links
   - https://github.com/LLMSecurity/awesome-agent-skills-security/pull/73
   - https://github.com/djadmin/awesome-bug-bounty/pull/84
 - [x] agentskill.sh imported (security score 100)
+- [x] Skill Store submitted (skillstore.io) — status: https://skillstore.io/submissions/d269c72d-2493-40f8-bef7-de97c4131f8b
 - [x] MIT LICENSE (GitHub license detection)
 - [x] Release v1.0.0
 - [x] skills.sh indexing request: vercel-labs/skills#2291
