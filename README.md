@@ -217,7 +217,7 @@ Authoritative flow: [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md) → *Engage
 | Step | Action | Done when |
 |:---:|---|---|
 | **1** | **Scope** | Domains, exclusions, rate limits confirmed |
-| **2** | **Recon** | Subdomains · endpoints · APIs · stack · auth surfaces · OpenAPI/Swagger · Wayback |
+| **2** | **Recon** | Subdomains · endpoints · APIs · stack · auth surfaces · OpenAPI/Swagger |
 | **3** | **Route** | Highest impact path first (table below) |
 | **4** | **Playbook** | Matching `knowledge/*.md` section read; escalate to fallback only if uncovered |
 | **5** | **Report** | Template in [Report template](#-report-template) |
@@ -385,7 +385,7 @@ Five local playbooks plus an install guide. Expand each for the full index.
 <br/>
 
 1. **Asset discovery** — subfinder · assetfinder · amass · crt.sh · httpx · dnsx · takeover check  
-2. **Content discovery** — katana · gau · waybackurls · ffuf/gobuster · kiterunner · ApiHunter · LinkFinder  
+2. **Content discovery** — katana · hakrawler · ffuf/gobuster · kiterunner · ApiHunter · LinkFinder  
 3. **Secrets** — trufflehog · gitleaks · `.git`/`.env`/backups · dependency confusion  
 4. **Fingerprint** — tech detect · framework defaults (Flask debug, actuators, Jenkins)  
 5. **Auth surface** — SSO/SAML/OIDC · reset flows · 2FA · JS-extracted API keys  

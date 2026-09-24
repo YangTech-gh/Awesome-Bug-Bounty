@@ -41,15 +41,18 @@ go install -v github.com/projectdiscovery/uncover/cmd/uncover@latest
 go install -v github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 
 go install -v github.com/tomnomnom/assetfinder@latest
-go install -v github.com/tomnomnom/waybackurls@latest
 go install -v github.com/tomnomnom/gf@latest
 go install -v github.com/tomnomnom/qsreplace@latest
 go install -v github.com/tomnomnom/anew@latest
-go install -v github.com/lc/gau/v2/cmd/gau@latest
 go install -v github.com/sensepost/gowitness@latest
 go install -v github.com/Josue87/gotator@latest
 go install -v github.com/d3mondev/puredns/v2@latest
 go install -v github.com/ffuf/ffuf/v2@latest
+
+# Low-yield archive pullers (gau/waybackurls) — rarely return usable data; NOT part of
+# the default pipeline. Only install if you specifically need historical URLs:
+# go install -v github.com/tomnomnom/waybackurls@latest
+# go install -v github.com/lc/gau/v2/cmd/gau@latest
 
 # Amass (large)
 sudo snap install amass            # or: brew install amass
@@ -206,11 +209,9 @@ go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 go install -v github.com/projectdiscovery/katana/cmd/katana@latest
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 go install -v github.com/tomnomnom/assetfinder@latest
-go install -v github.com/tomnomnom/waybackurls@latest
 go install -v github.com/tomnomnom/gf@latest
 go install -v github.com/tomnomnom/qsreplace@latest
 go install -v github.com/tomnomnom/anew@latest
-go install -v github.com/lc/gau/v2/cmd/gau@latest
 go install -v github.com/ffuf/ffuf/v2@latest
 go install -v github.com/hahwul/dalfox/v2@latest
 go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
@@ -228,7 +229,7 @@ Then install the layer you need: proxy (§3) · Obscura (§4) · MCP server (§6
 ## 10. Quick health check
 
 ```bash
-for t in subfinder httpx dnsx naabu katana nuclei gau ffuf sqlmap dalfox nmap gitleaks; do
+for t in subfinder httpx dnsx naabu katana nuclei ffuf sqlmap dalfox nmap gitleaks; do
   printf '%-12s %s\n' "$t" "$(command -v $t >/dev/null && echo OK || echo missing)"
 done
 nuclei -version
@@ -264,7 +265,7 @@ Config files worth touching:
 
 - **subfinder**: `~/.config/subfinder/provider-config.yaml` — add GitHub/rapid7/etc. tokens to unlock more passive sources.
 - **nuclei**: `nuclei -update-templates` first run; custom templates dir via `-t ~/nuclei-templates/custom`; headless browser checks need Chrome/Chromium installed.
-- **httpx/gau**: gau reads `~/.gau.toml` for alienvault/wayback keys (BugHound shares this file).
+- **httpx**: probe pipeline only; no extra config needed by default.
 - **sqlmap**: no config needed; use `--batch` + `--answers` for automation; keep `~/.sqlmap` for sessions/resume.
 - **mitmproxy/ZAP/Burp/Caido**: install/trust the tool's CA cert into the OS/browser store **only on your testing machine**; set browser proxy `127.0.0.1:8080` (Burp/Caido/ZAP) or `8080` (mitmproxy).
 - **Caido**: create a project per engagement (scope isolation); configure AI plugins with your model provider key (or OpenRouter) — see `caido/skills`.
@@ -278,7 +279,7 @@ Config files worth touching:
 ```bash
 nuclei -update-templates
 subfinder -version && httpx -version && nuclei -version
-# optional API sanity: pd httpx -resp-header ... ; gau example.com | head
+# optional API sanity: pd httpx -resp-header ...
 ```
 
 ## 12. MCP registration cookbook (opencode)

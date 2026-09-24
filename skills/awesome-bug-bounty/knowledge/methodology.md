@@ -9,7 +9,7 @@ Distilled from aw-junaid/bug-bounty methodologies/cheatsheets and hack-skills re
    - Probing: httpx (status, tech detect, titles), dnsx.
    - Takeover check: nuclei subdomain-takeover templates / can-i-take-over-xyz.
 2. **Content discovery**
-   - URLs: katana, gau, waybackurls, hakrawler; merge + dedupe.
+   - URLs: katana, hakrawler; merge + dedupe. (Archive pullers — gau/waybackurls — are unreliable and out of the default pipeline; rely on live crawl + JS/SPA harvest instead.)
    - Directories/files: ffuf/gobuster with seclists/common + backup extensions (`.bak`, `.old`, `~`).
    - APIs: kiterunner, ApiHunter, OpenAPI/Swagger/GQL introspection, JS file endpoint extraction (LinkFinder/knockpy).
    - JS-rendered SPAs: render with **Obscura** (`obscura scrape` / MCP `browser_*` tools) or Playwright; harvest `browser_network_requests` + console for hidden endpoints (see `tools.md`).
@@ -60,7 +60,7 @@ program (platform)
   └─ scope manifest            ← 1 file: hosts, wildcards, exclusions, rates, accounts
        └─ asset inventory      ← 1 file: uniq subdomains/domains (in-scope filter applied ONCE)
             └─ live hosts      ← 1 file: httpx-probed (status, tech, title)
-                 ├─ site surface   ← 1 file: uniq URLs+params (gau ∪ katana ∪ wayback ∪ JS ∪ Obscura ∪ dirscan)
+                 ├─ site surface   ← 1 file: uniq URLs+params (katana ∪ JS ∪ Obscura ∪ dirscan)
                  ├─ API surface    ← 1 file: endpoints+specs (OpenAPI/GQL/kiterunner ∪ JS-harvest ∪ proxy traffic)
                  └─ auth surface   ← 1 file: roles/sessions (low + high priv headers)
                       └─ test fan-out (each tool reads the SAME files, writes findings/)
@@ -86,7 +86,7 @@ engagements/<program>/
 
 ```bash
 # 1) Assets: merge sources, normalize, keep only scope
-cat from_pd.txt from_crtsh.txt from_wayback.txt | sed 's/^\*\.//' | sort -u > assets/all.txt
+cat from_pd.txt from_crtsh.txt | sed 's/^\*\.//' | sort -u > assets/all.txt
 # filter to scope (wildcard + excludes) — example with grep; or use httpx -ild
 grep -E '^(.*\.)?target\.com$' assets/all.txt | sort -u > assets/subs.txt
 
@@ -94,11 +94,9 @@ grep -E '^(.*\.)?target\.com$' assets/all.txt | sort -u > assets/subs.txt
 httpx -l assets/subs.txt -sc -title -tech-detect -o assets/live.txt
 
 # 3) Site surface: union all URL sources, normalize, dedupe
-gau --subs target.com > surfaces/gau.txt &
 katana -l assets/live.txt -o surfaces/katana.txt &
-waybackurls target.com > surfaces/wb.txt &
 wait
-cat surfaces/gau.txt surfaces/katana.txt surfaces/wb.txt surfaces/js.txt surfaces/obscura.txt \
+cat surfaces/katana.txt surfaces/js.txt surfaces/obscura.txt \
   | uro | sort -u > surfaces/urls.txt        # uro dedupes paths; grep -vE exclusions after
 
 # 4) API surface: specs + harvested paths (already unique by construction)

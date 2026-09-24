@@ -40,7 +40,7 @@ Rule: **proxy (Caido/Burp/ZAP) for interactive depth → nuclei for breadth → 
 **What it is:** open-source headless browser engine in Rust (V8 via deno_core, CDP server) — a drop-in for headless Chrome with Puppeteer/Playwright, plus a native **MCP server** (`obscura mcp`). ~30 MB memory, instant startup, built-in stealth (TLS ClientHello randomization, tracker blocklist), `--stealth` mode, per-page V8 watchdogs. Not a proxy and not a scanner.
 
 **Fit in the hunt:**
-1. **Recon/crawl of JS SPAs** — `obscura fetch` / `obscura scrape` for rendering routes, harvesting network requests (`browser_network_requests`), console messages, and JS-extracted endpoints where katana/gau see nothing.
+1. **Recon/crawl of JS SPAs** — `obscura fetch` / `obscura scrape` for rendering routes, harvesting network requests (`browser_network_requests`), console messages, and JS-extracted endpoints where katana sees nothing.
 2. **Agent-driven browsing via MCP** — tools like `browser_navigate`, `browser_click`, `browser_fill`, `browser_evaluate`, `browser_wait_for`: ideal for authenticated multi-step flows, wizard/workflow business-logic mapping, CSRF/state collection.
 3. **DOM XSS / postMessage / iframe work** — child frames get their own V8 realm; `browser_evaluate` executes payloads in-page to confirm execution (report only on real execution).
 4. **Lightweight CI/triage automation** — no Chrome/Node dependency; point existing Playwright/Puppeteer scripts at `obscura serve` (CDP WebSocket).
@@ -148,7 +148,7 @@ python bizlogic_scanner.py
 |---|---|
 | Subdomains | subfinder, amass, assetfinder, crt.sh |
 | Probe | httpx, dnsx |
-| Crawl/URLs | katana, gau, waybackurls, hakrawler · **Obscura** for JS-rendered surface |
+| Crawl/URLs | katana, hakrawler · **Obscura** for JS-rendered surface |
 | Content fuzz | ffuf, gobuster, feroxbuster |
 | API routes | kiterunner, ApiHunter, LinkFinder |
 | Vuln scan | nuclei (custom templates) |

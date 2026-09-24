@@ -34,7 +34,7 @@ Distilled knowledge base for bug bounty hunting and authorized security research
 Full set (only when `Configure…`):
 
 1. **Target + scope source** — `Program URL (HackerOne/Bugcrowd/Intigriti/YesWeHack page)` · `Domain / wildcard list pasted` · `scope.yaml / scope.txt file path` · `Just a name — I'll paste scope next`
-2. **Scope discovery** — `Use scope as-given (Recommended for Stealth)` (never touch out-of-scope; no expansion crawling) · `Fetch program scope from platform page` (parse in-scope/out-of-scope, rules, bounty table into `scope.yaml`) · `Passive expansion` (crt.sh, subfinder passive, gau/wayback, GitHub dorks — no active touch, then filter to scope) · `Full attack-surface map` (passive + httpx/katana live probe on in-scope only)
+2. **Scope discovery** — `Use scope as-given (Recommended for Stealth)` (never touch out-of-scope; no expansion crawling) · `Fetch program scope from platform page` (parse in-scope/out-of-scope, rules, bounty table into `scope.yaml`) · `Passive expansion` (crt.sh, subfinder passive, GitHub dorks — no active touch, then filter to scope) · `Full attack-surface map` (passive + httpx/katana live probe on in-scope only)
 3. **Vuln focus** (multiple) — `Broad recon` · `XSS` · `SQLi` · `IDOR / BOLA / API` · `Auth / ATO / JWT / OAuth` · `SSRF / XXE / OAST` · `Subdomain takeover / misconfig` · `Secrets / exposure` · `Business logic / race` · `MCP / LLM / prompt-injection`
 4. **Mode** — `Stealth / no API keys (Recommended)` (local/offline tools only; `HEXSTRIKE_API_KEY` and proxy CA are local auth, allowed) · `Balanced` (in-place LLM + read-only keys like `GITHUB_TOKEN`, no paid LLM APIs) · `Full` (cloud API keys per tool)
 5. **LLM backend** — `In-place (opencode session model)` · `Ollama (http://localhost:11434/v1)` · `Cloud API keys` · `None — deterministic only`
@@ -47,14 +47,14 @@ Full set (only when `Configure…`):
 
 | Focus / scope | Install only |
 |---|---|
-| Broad recon / unknown | §1 recon (subfinder, httpx, dnsx, katana, nuclei, gau, ffuf) + §10 health check |
-| XSS | httpx, katana, gau, dalfox, obscura (§4 for DOM XSS) |
+| Broad recon / unknown | §1 recon (subfinder, httpx, dnsx, katana, nuclei, ffuf) + §10 health check |
+| XSS | httpx, katana, dalfox, obscura (§4 for DOM XSS) |
 | SQLi | httpx, katana, nuclei, sqlmap (§2) |
 | IDOR / BOLA / API | httpx, katana, arjun, nuclei, AutorizePro/BurpAPISecuritySuite (§3 proxy) |
 | Auth / ATO / JWT | proxy (§3 Caido/Burp) + AutorizePro, nuclei, gitleaks |
 | SSRF / XXE / OAST | httpx, katana, interactsh-client (§2), ZAP/Burp Collaborator (§3) |
 | Takeover / misconfig | subfinder, dnsx, nuclei (+ takeover templates) |
-| Secrets / exposure | gitleaks, trufflehog binary (§2), gau/waybackurls |
+| Secrets / exposure | gitleaks, trufflehog binary (§2) |
 | Business logic / race | proxy (§3) + bizlogic (§5) + Turbo Intruder / Caido Automate |
 | MCP / LLM | obscura (§4) + §8 MCPScan/mcpsec/mcpwn + AI Scanner (§7) |
 
@@ -64,9 +64,9 @@ Full set (only when `Configure…`):
 |---|---|
 | Scope `as-given` | Never expand beyond provided hosts; no platform fetch, no passive enum outside scope; write `scope.yaml` verbatim then filter once |
 | Scope `fetch from platform` | Fetch program page / API, extract in-scope, out-of-scope, rules, rate limits into `scope.yaml`; ask before testing if scope parse is ambiguous |
-| Scope `passive expansion` / `full map` | crt.sh / subfinder-passive / gau / wayback only first; active probe (httpx/katana) only against confirmed in-scope; everything filtered to `scope.yaml` before fan-out |
+| Scope `passive expansion` / `full map` | crt.sh / subfinder-passive only first (archive pullers like gau/wayback rarely return usable data — skip them); active probe (httpx/katana) only against confirmed in-scope; everything filtered to `scope.yaml` before fan-out |
 | Focus set | Install + run only rows matching focus in Scope → minimal-tool map; other vuln classes are out-of-scope for tooling this engagement |
-| Mode `Stealth` | Never suggest/export cloud API keys; Caido AI plugins, Burp AI, AutorizePro AI **off** unless backend = Ollama; prefer offline/zero-dep tools (`nuclei -duc`, gau/wayback passive); hexstrike/Obscura only as **local stdio** MCP; active scanning rate-capped |
+| Mode `Stealth` | Never suggest/export cloud API keys; Caido AI plugins, Burp AI, AutorizePro AI **off** unless backend = Ollama; prefer offline/zero-dep tools (`nuclei -duc`, crt.sh/subfinder passive); hexstrike/Obscura only as **local stdio** MCP; active scanning rate-capped |
 | Mode `Balanced` | In-place/Ollama only for LLM; read-only GitHub PAT allowed; no paid API suggest |
 | Mode `Full` | Per-tool keys from `knowledge/install.md` §11 as needed; AI hunters may use cloud LLMs |
 | LLM `In-place` | All AI features pointed at the session agent — zero key setup |
