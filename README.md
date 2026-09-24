@@ -1,85 +1,557 @@
+<div align="center">
+
 # Awesome Bug Bounty
 
-A merged bug-bounty knowledge base packaged as an **opencode skill**, distilled from curated writeup indexes, payload libraries, methodology repos, business-logic playbooks, and Burp tooling — with the **source repos registered as fallback references** for deep research.
+**Merged bug-bounty knowledge → an opencode skill, with source repos as live fallback references.**
 
-> Authorized testing only. Stay in program scope and rules of engagement.
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=26&duration=3200&pause=900&color=58A6FF&center=true&vCenter=true&width=680&lines=Pwn+the+logic%2C+not+just+the+scanner;Recon+%C2%BB+Route+%C2%BB+Playbook+%C2%BB+Report;34+vuln+classes+%C2%BB+payloads+%C2%BB+business+logic+%C2%BB+tools" alt="Typing SVG" />
 
-## Install (opencode)
+<br/>
 
-The skill lives at `skills/awesome-bug-bounty/SKILL.md`. It is registered globally via `~/.config/opencode/opencode.jsonc`:
+[![Skill](https://img.shields.io/badge/opencode-skill-1f6feb?style=for-the-badge&logo=opencode&logoColor=white)](#-quick-start)
+[![Vuln classes](https://img.shields.io/badge/vuln_classes-34-0969da?style=for-the-badge)](#-vulnerability-coverage)
+[![Source repos](https://img.shields.io/badge/source_repos-9-1a7f37?style=for-the-badge)](#-knowledge-sources)
+[![Payload cats](https://img.shields.io/badge/payload_categories-64%2B-d29922?style=for-the-badge)](#-payload--bypass-cheat-sheet)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](#-license)
+[![Scope](https://img.shields.io/badge/testing-AUTHORIZED%20ONLY-b60205?style=for-the-badge)](#-authorized-testing-only)
 
-- `skills.paths` → this repo's `skills/`
-- `references` → all source repos as `@` aliases for fallback research
+<br/>
 
-Restart opencode after config changes. Skill triggers on: bug bounty, writeups, payloads, IDOR, business logic, SSRF, recon methodology, HackerOne reports, API security, etc.
+**[Quick Start](#-quick-start)** · **[Architecture](#-architecture)** · **[Router](#-skill-router)** · **[Knowledge](#-knowledge-base)** · **[Programs](#-programs--platforms)** · **[Reports](#-report-template)**
 
-## Structure
+</div>
+
+> [!CAUTION]
+> **Authorized testing only.** Stay inside program scope and rules of engagement. Do not run payloads against systems you do not have permission to test.
+
+---
+
+## Table of contents
+
+| # | Section | # | Section |
+|:-:|---|:-:|---|
+| 1 | [Quick Start](#-quick-start) | 8 | [Payload & bypass cheat sheet](#-payload--bypass-cheat-sheet) |
+| 2 | [Architecture](#-architecture) | 9 | [Business logic & races](#-business-logic--race-conditions) |
+| 3 | [Engage flow](#-engage-flow-impact-first) | 10 | [Methodology & recon](#-methodology-recon--reporting) |
+| 4 | [Skill router](#-skill-router) | 11 | [Tooling](#-tooling) |
+| 5 | [Knowledge base](#-knowledge-base) | 12 | [Programs & platforms](#-programs--platforms) |
+| 6 | [Vulnerability coverage](#-vulnerability-coverage) | 13 | [Report template](#-report-template) |
+| 7 | [Knowledge sources](#-knowledge-sources) | 14 | [Fallback references](#-fallback-references--deep-research) |
+
+---
+
+## Quick start
+
+<details open>
+<summary><b>Install the skill in opencode</b> — click to collapse</summary>
+
+<br/>
+
+```bash
+# 1. Clone
+git clone https://github.com/YangTech-gh/Awesome-Bug-Bounty.git
+cd Awesome-Bug-Bounty
+```
+
+Register in `~/.config/opencode/opencode.jsonc`:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": ["/home/hautly/Awesome-Bug-Bounty/skills"]
+  },
+  "references": {
+    "@awesome-bb-writeups": "https://github.com/devanshbatham/Awesome-Bugbounty-Writeups",
+    "@bug-bounty-reference": "https://github.com/ngalongc/bug-bounty-reference",
+    "@payloads-all-the-things": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+    "@hack-skills": "https://github.com/yaklang/hack-skills",
+    "@bizlogic": "https://github.com/ekomsSavior/bizlogic",
+    "@aw-junaid-bug-bounty": "https://github.com/aw-junaid/bug-bounty",
+    "@hackerone-reports": "https://github.com/reddelexc/hackerone-reports",
+    "@autorizepro": "https://github.com/WuliRuler/AutorizePro",
+    "@burp-api-security-suite": "https://github.com/Teycir/BurpAPISecuritySuite"
+  }
+}
+```
+
+```bash
+# 2. Restart opencode (config is not hot-reloaded)
+```
+
+**Triggers:** bug bounty · writeups · payloads · IDOR · business logic · SSRF · recon · HackerOne · API security · auth bypass · race conditions
+
+</details>
+
+<details>
+<summary><b>Repo layout</b> — click to expand</summary>
+
+<br/>
 
 ```
 Awesome-Bug-Bounty/
-├── README.md                          ← this file (programs/repos reference)
-├── skills/awesome-bug-bounty/SKILL.md ← the skill (distilled knowledge + routers)
+├── README.md                            ← this file
+├── skills/
+│   └── awesome-bug-bounty/
+│       └── SKILL.md                     ← skill entry (rules, engage flow, routers)
 └── knowledge/
-    ├── vuln-types.md                  ← per-vuln hunt focus + patterns
-    ├── payloads.md                    ← payload/bypass cheat sheet
-    ├── business-logic.md              ← logic + race playbooks (9 checks, matrices)
-    ├── methodology.md                 ← recon pipeline, report template, commands
-    └── tools.md                       ← AutorizePro, BurpAPISecuritySuite, bizlogic
+    ├── vuln-types.md                    ← per-vuln hunt focus + patterns
+    ├── payloads.md                      ← payload / WAF bypass cheat sheet
+    ├── business-logic.md                ← 9 logic checks, payment matrix, races
+    ├── methodology.md                   ← recon pipeline, commands, reporting
+    └── tools.md                         ← AutorizePro, BurpAPISecuritySuite, bizlogic
 ```
 
-## Knowledge sources (analysis summary)
-
-| Repo | What was merged |
+| File | Role |
 |---|---|
-| [devanshbatham/Awesome-Bugbounty-Writeups](https://github.com/devanshbatham/Awesome-Bugbounty-Writeups) | Writeup index by bug type (XSS, CSRF, LFI, IDOR, SSRF, RCE, race, 2FA, CORS, subdomain takeover, DoS, Android) |
-| [ngalongc/bug-bounty-reference](https://github.com/ngalongc/bug-bounty-reference) | Writeups by bug nature incl. XSSI, token theft, OAuth, money stealing, business logic, email, header injection |
-| [swisskyrepo/PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) | 64+ vuln categories: payloads, WAF bypasses, methodology → condensed cheat sheet |
-| [yaklang/hack-skills (business-logic-vulnerabilities)](https://github.com/yaklang/hack-skills/tree/main/skills/business-logic-vulnerabilities) | Business-logic methodology, checklist, scenarios (payment matrix, state machines, races) |
-| [ekomsSavior/bizlogic](https://github.com/ekomsSavior/bizlogic) | 9 heuristic logic checks + safe exploitation workflow |
-| [aw-junaid/bug-bounty](https://github.com/aw-junaid/bug-bounty) | Full web/API methodology, cheatsheets, wordlists, report templates, tool automation |
-| [reddelexc/hackerone-reports](https://github.com/reddelexc/hackerone-reports) | Top disclosed reports by bug type + by program (index pointers) |
-| [WuliRuler/AutorizePro](https://github.com/WuliRuler/AutorizePro) | Authz-enforcement testing workflow (headers, AI triage, filters) |
-| [Teycir/BurpAPISecuritySuite](https://github.com/Teycir/BurpAPISecuritySuite) | API recon/fuzzing suite: 15 attack types, BOLA, multi-role auth replay |
+| [`skills/awesome-bug-bounty/SKILL.md`](skills/awesome-bug-bounty/SKILL.md) | Operating rules, category router, vuln index, fallback table |
+| [`knowledge/vuln-types.md`](knowledge/vuln-types.md) | Hunt focus for 30+ classes (XSS → smuggling → GraphQL) |
+| [`knowledge/payloads.md`](knowledge/payloads.md) | Context matrix, injection payloads, 401/403 bypass list |
+| [`knowledge/business-logic.md`](knowledge/business-logic.md) | bizlogic 9 checks, payment attacks, state machines, races |
+| [`knowledge/methodology.md`](knowledge/methodology.md) | Recon stages, impact ranking, wordlists, report template |
+| [`knowledge/tools.md`](knowledge/tools.md) | Burp extensions + bizlogic workflow + complementary stack |
 
-## Programs & platforms reference
+</details>
 
-### Platforms
+---
 
-| Platform | Notes |
+## Architecture
+
+```mermaid
+flowchart TB
+    U["User prompt<br/>e.g. 'SSRF bypass'"] --> SK["SKILL.md<br/>awesome-bug-bounty"]
+    SK --> RULE{"Need deep detail?"}
+    RULE -- "No" --> LOCAL["knowledge/*.md<br/>distilled playbook"]
+    RULE -- "Yes" --> REF["Registered @reference<br/>source repo fallback"]
+    LOCAL --> RPT["Impact-first report"]
+    REF --> RPT
+
+    subgraph KNO [Local knowledge]
+        VT[vuln-types.md]
+        PL[payloads.md]
+        BL[business-logic.md]
+        ME[methodology.md]
+        TO[tools.md]
+    end
+
+    subgraph FB [Fallback refs 9 repos]
+        R1["@awesome-bb-writeups"]
+        R2["@payloads-all-the-things"]
+        R3["@hackerone-reports"]
+        R4["@bizlogic"]
+        R5["@burp-api-security-suite"]
+        R6["+4 more"]
+    end
+
+    SK --> KNO
+    SK --> FB
+
+    style SK fill:#1f6feb,color:#fff,stroke:#58a6ff
+    style RPT fill:#238636,color:#fff,stroke:#3fb950
+    style REF fill:#9e6a03,color:#fff,stroke:#d29922
+    style LOCAL fill:#1f6feb,color:#fff,stroke:#58a6ff
+```
+
+**Operating rules**
+
+1. Prefer local distilled knowledge first (`knowledge/*.md`).
+2. Fall back to `@references` only for writeup links, full payload lists, tool internals.
+3. Authorized testing only — program scope + ROE.
+4. Evidence standard: clear impact · minimal repro · PoC req/res · severity · fix guidance.
+
+---
+
+## Engage flow (impact-first)
+
+| Step | Action | Done when |
+|:---:|---|---|
+| **1** | **Scope** | Domains, exclusions, rate limits confirmed |
+| **2** | **Recon** | Subdomains · endpoints · APIs · stack · auth surfaces · OpenAPI/Swagger · Wayback |
+| **3** | **Route** | Highest impact path first (table below) |
+| **4** | **Playbook** | Matching `knowledge/*.md` section read; escalate to fallback only if uncovered |
+| **5** | **Report** | Template in [Report template](#-report-template) |
+
+**Impact ranking**
+
+```
+RCE / SQLi (data dump)  >  Auth bypass / ATO  >  SSRF (cloud metadata)
+  >  IDOR (PII/mass)  >  Stored XSS (admin)  >  Business logic (money)
+  >  Race limits  >  CSRF / CORS / open redirect  >  Info disclosure  >  Low-impact XSS
+```
+
+---
+
+## Skill router
+
+Symptom → knowledge file → primary fallback. Click rows mentally: every surface has a path.
+
+<details open>
+<summary><b>Full category router</b> (16 surfaces) — collapse to skim</summary>
+
+<br/>
+
+| # | Symptom / surface | Knowledge | Primary fallback |
+|:-:|---|---|---|
+| 1 | Reflected / stored / DOM / blind XSS, CSP bypass | [`vuln-types`](knowledge/vuln-types.md) | Awesome-Bugbounty-Writeups · PayloadsAllTheThings |
+| 2 | SQLi, NoSQLi, interpreter injection | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
+| 3 | SSRF, cloud metadata, DNS rebinding | [`vuln-types`](knowledge/vuln-types.md) | PayloadsAllTheThings · HackerOne TOPSSRF |
+| 4 | IDOR / BOLA / broken object authz | [`vuln-types`](knowledge/vuln-types.md) · [`tools`](knowledge/tools.md) | AutorizePro · BurpAPISecuritySuite · bug-bounty-reference |
+| 5 | Auth bypass, 2FA/MFA, OAuth/JWT/SAML, ATO | [`vuln-types`](knowledge/vuln-types.md) | bug-bounty-reference · hack-skills auth-sec |
+| 6 | Business logic (pricing, coupons, workflow, stock, limits) | [`business-logic`](knowledge/business-logic.md) | hack-skills · bizlogic |
+| 7 | Race conditions / TOCTOU | [`business-logic`](knowledge/business-logic.md) | PayloadsAllTheThings · TOPRACECONDITION |
+| 8 | CSRF, CORS, clickjacking, open redirect | [`vuln-types`](knowledge/vuln-types.md) | Awesome-Bugbounty-Writeups |
+| 9 | RCE, deserialization, SSTI, template injection | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
+| 10 | File upload, LFI/RFI, path traversal | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
+| 11 | API recon, GraphQL, REST, mass assignment | [`methodology`](knowledge/methodology.md) · [`tools`](knowledge/tools.md) | BurpAPISecuritySuite · hack-skills api-sec |
+| 12 | Subdomain takeover, cache deception, smuggling | [`vuln-types`](knowledge/vuln-types.md) | PayloadsAllTheThings · bug-bounty-reference |
+| 13 | Payload / WAF bypass by context | [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
+| 14 | Recon, wordlists, cheatsheets, report templates | [`methodology`](knowledge/methodology.md) | aw-junaid/bug-bounty |
+| 15 | Top disclosed reports / program patterns | [`vuln-types`](knowledge/vuln-types.md) | hackerone-reports `docs/tops_*` |
+| 16 | Tooling: authz testing, API fuzzing, logic scan | [`tools`](knowledge/tools.md) | AutorizePro · BurpAPISecuritySuite · bizlogic |
+
+</details>
+
+---
+
+## Knowledge base
+
+Five local playbooks. Expand each for the full index.
+
+<details>
+<summary><b>vuln-types.md</b> — hunt focus & patterns (30+ classes)</summary>
+
+<br/>
+
+| Class | Hunt for | Escalation / notes |
+|---|---|---|
+| **XSS** | Reflection in HTML/JS/attrs; JSONP; postMessage; uploads; blind in admin fields | self-XSS→CSRF→stored; session theft→ATO; CSP gadget bypasses |
+| **SQLi** | ORDER BY / search / sort / headers; second-order | union · boolean · time · error · OOB |
+| **SSRF** | URL/webhook/avatar/PDF params | cloud metadata · port scan · Gopher/Redis RCE · rebinding |
+| **IDOR / BOLA** | Sequential/GUID IDs; owner/tenant params | AutorizePro replay; ORM leaks (Django/Prisma/Ransack) |
+| **Auth / ATO / 2FA** | Reset tokens, OTP, OAuth redirect_uri, JWT alg, SAML wrapping | claim tamper · state bypass · remember-device abuse |
+| **Race condition** | Coupons, stock, votes, single-use codes | Turbo Intruder last-byte sync · HTTP/2 single-packet |
+| **Business logic** | Pricing, limits, workflow | → [business-logic.md](#-business-logic--race-conditions) |
+| **CSRF** | State-changes without token; JSON content-type trust | → stored XSS; 2FA disable |
+| **CORS** | Reflecting origin + credentials | cross-origin read of auth responses |
+| **RCE / deser / SSTI** | Uploads, gadgets, template engines | ysoserial · pickle · Jinja2/Twig chains |
+| **CMDi** | Spaceless `$IFS`, wildcards, ImageMagick/FFmpeg | disable_functions bypasses |
+| **Upload / LFI** | Double ext, polyglot, phar; wrappers `php://filter` | log poison · pearcmd · `/proc/self/environ` |
+| **Open redirect** | `//evil`, `@`, backslash | → OAuth token theft |
+| **Clickjacking** | Missing XFO / weak frame-ancestors | pair with CSRF |
+| **Subdomain takeover** | Dangling CNAME (GitHub/S3/Heroku…) | can-i-take-over-xyz |
+| **Cache** | Deception (path) · poisoning (unkeyed headers) | X-Forwarded-Host · X-Original-URL |
+| **Smuggling** | CL.TE / TE.CL / TE.TE · H2 downgrade | cache poison → XSS / session |
+| **Host header** | Absolute-URL, password reset, routing | reset poisoning · SSRF |
+| **GraphQL** | Introspection, batching, nested DoS, node IDOR | Field suggestions leak schema |
+| **API Top 10** | BOLA, BFLA, mass assignment, excess data | → [methodology](#-methodology-recon--reporting) |
+| **Prototype pollution** | Merge/clone sinks, gadget chains | → RCE in JS runtimes |
+| **WebSocket hijack** | Missing origin check on WS upgrade | session riding |
+| **401/403 bypass** | Path tricks · override headers · method matrix | see [payloads](#-payload--bypass-cheat-sheet) |
+| **SAML/SSO abuse** | Signature wrapping · NameID comment · XXE | ATO via assertion forge |
+| **Supply chain** | Dependency confusion · typosquat · lockfile | registry boundary tests |
+| **Email / CRLF / header** | SMTP injection · log forge · response split | host header → link forge |
+
+**Full narrative + fallback paths:** [`knowledge/vuln-types.md`](knowledge/vuln-types.md)
+
+</details>
+
+<details>
+<summary><b>payloads.md</b> — context matrix & cheat sheet</summary>
+
+<br/>
+
+**Context selection matrix**
+
+| Context | Approach |
 |---|---|
-| [HackerOne](https://www.hackerone.com) | Largest marketplace; disclosed report archive via `reddelexc/hackerone-reports` (`docs/tops_by_bug_type`, `docs/tops_by_program`) |
+| HTML body | `<script>`, `onerror` / `onload`, `<img src=x onerror=…>` |
+| Attribute | close quote `"><svg onload=…>` |
+| JS string | `' -alert(1)- '` · `` `${alert(1)}` `` |
+| URL param | URL-encode / double-encode · `javascript:` |
+| JSON | valid JSON + escape: `{"x":"\";alert(1)//"}` |
+| Template engine | detect first: `{{7*7}}` vs `${7*7}` vs `<%= 7*7 %>` |
+
+**Quick payloads by class**
+
+<details>
+<summary>XSS · SQLi · NoSQLi</summary>
+
+- XSS: `<script>alert(1)</script>` · `<img src=x onerror=alert(1)>` · `<svg/onload=alert(1)>` · `<details open ontoggle=…>` · blind via webhook in User-Agent/comments
+- SQLi: `ORDER BY n` → `' UNION SELECT NULL-- -` · boolean `' AND 1=1-- -` · time `SLEEP(5)` / `WAITFOR DELAY` / `pg_sleep` · WAF: `/*!50000UNION*/`, `%09`, HPP
+- NoSQL: `{"username":{"$gt":""},"password":{"$gt":""}}` · `$where` JS · duplicate-key override
+
+</details>
+
+<details>
+<summary>SSRF · CMDi · SSTI · LFI</summary>
+
+- SSRF targets: `169.254.169.254` + AWS/GCP/Azure metadata paths · bypass: decimal `2130706433`, `127.1`, rebinding, `gopher://`/`dict://`/`file://`
+- CMDi: `;` `|` `||` `&&` `%0a` · spaceless `$IFS` · `{cat,/etc/passwd}` · time `sleep 5`
+- SSTI Jinja2: `{{config.__class__.__init__.__globals__['os'].popen('id').read()}}`
+- LFI: `php://filter/convert.base64-encode/resource=index.php` · `phar://` · `zip://` · log poison
+
+</details>
+
+<details>
+<summary>JWT · OAuth · Open redirect · 401/403</summary>
+
+- JWT: `alg:none` · RS256→HS256 (HMAC with public key) · claim tamper · `kid` traversal
+- OAuth: `redirect_uri` tricks — path traversal, `app.com.evil.com`, open-redirect on allowlist
+- Open redirect: `//evil.com` · `/\evil.com` · `///evil.com` · `good.com@evil.com`
+- 401/403: `/%61dmin` · `/admin.json` · `//admin` · `X-Original-URL` · `X-Forwarded-For: 127.0.0.1` · method override
+
+</details>
+
+**Race snippet (Turbo Intruder):** see [`knowledge/payloads.md`](knowledge/payloads.md)
+
+**Full lists:** fetch `@payloads-all-the-things` → category `README.md`
+
+</details>
+
+<details>
+<summary><b>business-logic.md</b> — 9 checks, payment matrix, state machines</summary>
+
+<br/>
+
+**Nine heuristic checks (bizlogic)**
+
+| # | Check | Failure mode |
+|:-:|---|---|
+| 1 | Unverified ownership claims/transfers | email/domain change without proof |
+| 2 | Auth bypass via alternate channels | API path weaker than UI |
+| 3 | Authz via user-controlled keys | `role`/`tenant` in body |
+| 4 | Weak password recovery | predictable/expiring tokens |
+| 5 | Incorrect ownership assignment | attacker-controlled `user_id` on create |
+| 6 | Resource allocation without limits | unlimited coupons/seats/credits |
+| 7 | Premature resource release | commit before validation |
+| 8 | Single unique action flaws | one-vote/coupon only client-side |
+| 9 | Client-side workflow enforcement | skip hidden wizard step → `POST /complete` |
+
+**Payment manipulation matrix (abbrev.)**
+
+| Attack | Test |
+|---|---|
+| Negative qty/price | `quantity=-1` → credit? |
+| Discount stacking | two coupons; % + fixed |
+| Currency confusion | pay weak / refund strong |
+| Client totals trusted | tamper `total`/`amount` |
+| Refund abuse | double refund; refund w/o return |
+| Promo reapply | reset usage count |
+
+**State machine:** map `draft → review → approved → paid → shipped` · replay out-of-order / reverse transitions · concurrent transitions for invariant breaks.
+
+**Race playbook:** last-byte sync · HTTP/2 single-packet · verify **server invariants** (balance, stock, tally) — not just HTTP 200.
+
+</details>
+
+<details>
+<summary><b>methodology.md</b> — recon pipeline & commands</summary>
+
+<br/>
+
+1. **Asset discovery** — subfinder · assetfinder · amass · crt.sh · httpx · dnsx · takeover check  
+2. **Content discovery** — katana · gau · waybackurls · ffuf/gobuster · kiterunner · ApiHunter · LinkFinder  
+3. **Secrets** — trufflehog · gitleaks · `.git`/`.env`/backups · dependency confusion  
+4. **Fingerprint** — tech detect · framework defaults (Flask debug, actuators, Jenkins)  
+5. **Auth surface** — SSO/SAML/OIDC · reset flows · 2FA · JS-extracted API keys  
+
+**One-liners**
+
+```bash
+ffuf -u https://t/FUZZ -w seclists/Discovery/Web-Content/common.txt -mc 200,301,403,500
+cat subs.txt | httpx -sc -title -tech-detect
+nuclei -u https://t -severity critical,high -rl 100
+sqlmap -u 'https://t/?id=1' --batch --level 3 --risk 2
+dalfox url 'https://t/?q=x' --pipe
+```
+
+**Wordlists** (in aw-junaid/bug-bounty): `custom-subdomains.txt` · `directories-small.txt` · `xss-payloads.txt`
+
+</details>
+
+<details>
+<summary><b>tools.md</b> — AutorizePro · BurpAPISecuritySuite · bizlogic</summary>
+
+<br/>
+
+| Tool | What it does | Statuses / output |
+|---|---|---|
+| **AutorizePro** | Authz enforcement replay (low-priv headers vs high-priv session) + optional AI triage | `Bypassed!` · `Enforced!` · `Is enforced???` · HTML/CSV export |
+| **BurpAPISecuritySuite** | API recon, 15 attack types, BOLA/IDOR, multi-role auth replay, Nuclei/Katana/FFUF | AI Bundle · Passive Discovery · Verify (sqlmap/dalfox) |
+| **bizlogic** | Same-origin crawl → 9 heuristics → optional safe exploitation (max 5/finding) | text/JSON/HTML + Nuclei templates under `reports/` |
+
+**AutorizePro flow:** paste 2nd-account headers → optional AI endpoint → browse with high-priv session → always set Interception Filters (scope!) to avoid cookie leakage.
+
+**bizlogic:** `pip install requests beautifulsoup4 && python bizlogic_scanner.py`
+
+**Complementary stack:** subfinder → httpx → katana → ffuf → nuclei → sqlmap/dalfox → AutorizePro / Auth Replay → bizlogic + manual state machines.
+
+</details>
+
+---
+
+## Vulnerability coverage
+
+34 classes indexed in the skill (detail in [`knowledge/vuln-types.md`](knowledge/vuln-types.md)):
+
+<details open>
+<summary>Expand the full tag list</summary>
+
+<br/>
+
+`XSS (R/S/DOM/blind/XSSI)` · `SQLi` · `NoSQLi` · `SSRF` · `XXE` · `IDOR/BOLA` · `CSRF` · `CORS` · `Auth bypass/ATO` · `2FA/MFA bypass` · `OAuth` · `JWT` · `SAML` · `Race condition` · `Business logic` · `RCE` · `Deserialization` · `SSTI` · `Command injection` · `File upload` · `LFI/RFI` · `Path traversal` · `Open redirect` · `Clickjacking` · `Subdomain takeover` · `Web cache deception` · `Web cache poisoning` · `HTTP request smuggling` · `CRLF/header injection` · `Host header attacks` · `Prototype pollution` · `GraphQL abuse` · `Mass assignment` · `API key leaks` · `Info disclosure/secrets` · `DoS` · `Email/header injection` · `Supply chain/dependency confusion` · `WebSocket hijacking` · `401/403 bypass` · `SAML/SSO abuse`
+
+</details>
+
+---
+
+## Knowledge sources
+
+Nine upstream repos merged into this skill. Each row = what we took + what we still fall back for.
+
+| # | Repository | Merged into local knowledge | Fallback when you need… | Alias |
+|:-:|---|---|---|---|
+| 1 | [Awesome-Bugbounty-Writeups](https://github.com/devanshbatham/Awesome-Bugbounty-Writeups) | vuln index by bug type | full writeup link lists | `@awesome-bb-writeups` |
+| 2 | [bug-bounty-reference](https://github.com/ngalongc/bug-bounty-reference) | writeups by nature (OAuth, money, XSSI) | historical categorized writeups | `@bug-bounty-reference` |
+| 3 | [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) | payload/bypass cheat sheet | complete category READMEs (64+) | `@payloads-all-the-things` |
+| 4 | [hack-skills · business-logic](https://github.com/yaklang/hack-skills/tree/main/skills/business-logic-vulnerabilities) | payment matrix, state machines, races | deep skill playbooks (auth, recon, api-sec…) | `@hack-skills` |
+| 5 | [bizlogic](https://github.com/ekomsSavior/bizlogic) | 9 heuristic checks + safe exploit flow | scanner source / check defs | `@bizlogic` |
+| 6 | [aw-junaid/bug-bounty](https://github.com/aw-junaid/bug-bounty) | recon pipeline, cheatsheets, templates | wordlists + tool automation scripts | `@aw-junaid-bug-bounty` |
+| 7 | [hackerone-reports](https://github.com/reddelexc/hackerone-reports) | top-report index pointers | `docs/tops_by_bug_type` · `docs/tops_by_program` | `@hackerone-reports` |
+| 8 | [AutorizePro](https://github.com/WuliRuler/AutorizePro) | authz test workflow + AI triage notes | extension config/source details | `@autorizepro` |
+| 9 | [BurpAPISecuritySuite](https://github.com/Teycir/BurpAPISecuritySuite) | API suite workflow (15 attack types) | tabs, exports, integration flags | `@burp-api-security-suite` |
+
+---
+
+## Programs & platforms
+
+<details open>
+<summary><b>Platforms</b> — click to collapse</summary>
+
+<br/>
+
+| Platform | Focus / notes |
+|---|---|
+| [HackerOne](https://www.hackerone.com) | Largest marketplace; archive → [hackerone-reports](https://github.com/reddelexc/hackerone-reports) `docs/tops_*` |
 | [Bugcrowd](https://www.bugcrowd.com) | Crowdsourced + private programs |
-| [Intigriti](https://www.intigriti.com) | EU-heavy platform, monthly XSS challenges |
-| [YesWeHack](https://www.yeswehack.com) | EU VDP/BB platform |
-| [Google VRP](https://bughunters.google.com) | Android, Google, Abuse; high payouts |
-| [Microsoft MSRC](https://www.microsoft.com/msrc) | Azure/Windows/Office; AAA style |
-| [Apple Security](https://security.apple.com) | iOS/macOS/web services |
-| [Internet Bug Bounty (IBB)](https://www.internetbugbounty.org) | Internet-critical OSS (curl, Python, OpenSSL…) |
+| [Intigriti](https://www.intigriti.com) | EU-heavy · monthly XSS challenges |
+| [YesWeHack](https://www.yeswehack.com) | EU VDP / bug bounty |
+| [Google VRP](https://bughunters.google.com) | Android · Google · Abuse · high payouts |
+| [Microsoft MSRC](https://www.microsoft.com/msrc) | Azure / Windows / Office |
+| [Apple Security](https://security.apple.com) | iOS / macOS / services |
+| [Internet Bug Bounty](https://www.internetbugbounty.org) | Critical OSS (curl, Python, OpenSSL…) |
 
-### Programs frequently referenced in top-report datasets
+</details>
 
-Shopify · GitLab · HackerOne · Uber · Twitter/X/xAI · Node.js · U.S. DoD · Slack · Coinbase · Verizon Media · Automattic · ownCloud/Nextcloud · Vimeo · Pornhub · Rockstar · TikTok · Brave · Yahoo · Starbucks · WordPress · Curl · Rocket.Chat · Acronis — full lists under hackerone-reports `docs/tops_by_program/`.
+<details>
+<summary><b>Programs in top-report datasets</b> — full list</summary>
 
-### Program-selection tips
+<br/>
 
-- Prefer **signal-rich, payout-clear** programs with documented scopes (public or VDP → paid).
-- Study **program-specific top reports** before hunting: patterns repeat per codebase.
-- Track **acquisition/subdomain sprawl** for takeover & legacy-endpoint hunting.
+Shopify · GitLab · HackerOne · Uber · Twitter/X/xAI · Node.js · U.S. DoD · Slack · Coinbase · Verizon Media · Automattic · ownCloud · Nextcloud · Vimeo · Rockstar · TikTok · Brave · Yahoo · Starbucks · WordPress · curl · Rocket.Chat · Acronis · …
+Program-specific indexes: [hackerone-reports `docs/tops_by_program/`](https://github.com/reddelexc/hackerone-reports/tree/master/docs/tops_by_program)
 
-## Fallback research routing (opencode references)
+</details>
 
-| Alias | Use when you need… |
-|---|---|
-| `@awesome-bb-writeups` | Real-world writeup links for a specific bug type |
-| `@bug-bounty-reference` | Categorized historical writeups (OAuth, money, XSSI…) |
-| `@payloads-all-the-things` | Full payload lists / bypass matrices per category |
-| `@hack-skills` | Deep skill playbooks (auth, recon, API, priv-esc…) |
-| `@bizlogic` | Logic-scanner source + check definitions |
-| `@aw-junaid-bug-bounty` | Methodologies, cheatsheets, wordlists, templates |
-| `@hackerone-reports` | Top disclosed reports by type/program |
-| `@autorizepro` | AutorizePro source/config details |
-| `@burp-api-security-suite` | Suite tabs, export formats, integration flags |
+<details>
+<summary><b>Program-selection tips</b></summary>
+
+<br/>
+
+1. Prefer **signal-rich, payout-clear** programs with documented scopes (public → VDP → paid ladder).
+2. Study **program-specific top reports** before hunting — patterns repeat per codebase.
+3. Track **acquisition / subdomain sprawl** for takeover and legacy-endpoint hunting.
+4. Match effort to **asset age**: M&A leftovers and forgotten microsites outperform hardened cores.
+
+</details>
+
+---
+
+## Report template
+
+<details open>
+<summary>Expand — copy-ready Markdown</summary>
+
+<br/>
+
+```markdown
+# Title: [Vuln type] in [endpoint/feature] leading to [impact]
+
+## Summary
+One paragraph: what, where, impact.
+
+## Severity
+[CVSS or program rubric] — justification.
+
+## Affected endpoint(s)
+- METHOD https://host/path (param names)
+
+## Steps to reproduce
+1. ...
+2. ...
+
+## Proof of concept
+Request/response (redact secrets). Screenshots if UI.
+
+## Impact
+Who/what is affected; data or action demonstrated (minimal).
+
+## Remediation
+Server-side check, authz fix, rate limit, etc.
+
+## References
+OWASP / CWE / writeup links.
+```
+
+**Evidence standard:** clear impact · minimal repro steps · PoC request-response · severity justification · fix guidance.
+
+</details>
+
+---
+
+## Fallback references — deep research
+
+After config registration, ask opencode with these aliases (or open the GitHub paths directly):
+
+| Alias | Repo | Example deep path |
+|---|---|---|
+| `@awesome-bb-writeups` | Awesome-Bugbounty-Writeups | XSS / IDOR / SSRF sections |
+| `@bug-bounty-reference` | bug-bounty-reference | `#IDOR` · `#Authentication-Bypass` |
+| `@payloads-all-the-things` | PayloadsAllTheThings | `SQL Injection/README.md` |
+| `@hack-skills` | hack-skills | `skills/business-logic-vulnerabilities/` |
+| `@bizlogic` | bizlogic | `bizlogic_scanner.py` · check defs |
+| `@aw-junaid-bug-bounty` | aw-junaid/bug-bounty | methodologies · cheatsheets · wordlists |
+| `@hackerone-reports` | hackerone-reports | `docs/tops_by_bug_type/TOPSSRF.md` |
+| `@autorizepro` | AutorizePro | `AutorizePro.py` config |
+| `@burp-api-security-suite` | BurpAPISecuritySuite | tabs · export formats |
+
+> Rule of thumb: **distilled local knowledge first → fetch `@reference` only when you need links, full payload catalogs, or tool source.**
+
+---
+
+## Interactive index (jump)
+
+| | | | |
+|---|---|---|---|
+| [Quick start](#-quick-start) | [Architecture](#-architecture) | [Engage flow](#-engage-flow-impact-first) | [Skill router](#-skill-router) |
+| [Knowledge base](#-knowledge-base) | [Coverage](#-vulnerability-coverage) | [Sources](#-knowledge-sources) | [Payloads](#-payload--bypass-cheat-sheet) |
+| [Business logic](#-business-logic--race-conditions) | [Methodology](#-methodology-recon--reporting) | [Tooling](#-tooling) | [Programs](#-programs--platforms) |
+| [Report template](#-report-template) | [Fallback refs](#-fallback-references--deep-research) | [License](#-license) | [Back to top](#awesome-bug-bounty) |
+
+---
 
 ## License
 
-MIT. Source repos retain their own licenses; knowledge is distilled for educational/authorized-testing use.
+**MIT** for this repo's skill + distilled docs.
+
+Source repos retain their own upstream licenses. Knowledge is condensed for **educational and authorized security testing** only.
+
+<div align="center">
+
+<br/>
+
+**[⬆ Back to top](#awesome-bug-bounty)**
+
+![Visitors](https://api.visitorbadge.io/api/visitors?path=YangTech-gh%2FAwesome-Bug-Bounty&label=README%20views&labelColor=%231f6feb&countColor=%2324292f&style=for-the-badge)
+
+</div>
