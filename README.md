@@ -2,15 +2,16 @@
 
 # Awesome Bug Bounty
 
-**Merged bug-bounty knowledge → an opencode skill, with source repos as live fallback references.**
+**Merged bug-bounty knowledge → an agent skill (OpenCode, Claude Code, Codex, Cursor, …), with source repos as live fallback references.**
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=26&duration=3200&pause=900&color=58A6FF&center=true&vCenter=true&width=680&lines=Pwn+the+logic%2C+not+just+the+scanner;Recon+%C2%BB+Route+%C2%BB+Playbook+%C2%BB+Report;34+vuln+classes+%C2%BB+payloads+%C2%BB+business+logic+%C2%BB+tools" alt="Typing SVG" />
 
 <br/>
 
 [![Skill](https://img.shields.io/badge/opencode-skill-1f6feb?style=for-the-badge&logo=opencode&logoColor=white)](#-quick-start)
-[![Vuln classes](https://img.shields.io/badge/vuln_classes-34-0969da?style=for-the-badge)](#-vulnerability-coverage)
-[![Source repos](https://img.shields.io/badge/source_repos-9-1a7f37?style=for-the-badge)](#-knowledge-sources)
+[![skills CLI](https://img.shields.io/badge/skills-npx%20skills%20ready-1f6feb?style=for-the-badge)](https://skills.sh/yangtech-gh/awesome-bug-bounty/awesome-bug-bounty)
+[![Vuln classes](https://img.shields.io/badge/vuln_classes-36-0969da?style=for-the-badge)](#-vulnerability-coverage)
+[![Source repos](https://img.shields.io/badge/source_repos-12-1a7f37?style=for-the-badge)](#knowledge-sources--fallback-references)
 [![Payload cats](https://img.shields.io/badge/payload_categories-64%2B-d29922?style=for-the-badge)](#-payload--bypass-cheat-sheet)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](#-license)
 [![Scope](https://img.shields.io/badge/testing-AUTHORIZED%20ONLY-b60205?style=for-the-badge)](#-authorized-testing-only)
@@ -36,11 +37,34 @@
 | 4 | [Skill router](#-skill-router) | 11 | [Tooling](#-tooling) |
 | 5 | [Knowledge base](#-knowledge-base) | 12 | [Programs & platforms](#-programs--platforms) |
 | 6 | [Vulnerability coverage](#-vulnerability-coverage) | 13 | [Report template](#-report-template) |
-| 7 | [Knowledge sources](#-knowledge-sources) | 14 | [Fallback references](#-fallback-references--deep-research) |
+| 7 | [Knowledge sources](#knowledge-sources--fallback-references) | 14 | [Interactive index](#-interactive-index-jump) |
 
 ---
 
 ## Quick start
+
+### Option A — `npx skills` (recommended, multi-agent)
+
+The repo layout (`skills/awesome-bug-bounty/SKILL.md` + bundled `knowledge/`) is discovered by the [skills CLI](https://github.com/vercel-labs/skills) and installs into OpenCode, Claude Code, Codex, Cursor, and [70+ agents](https://github.com/vercel-labs/skills#supported-agents). Also listed on [skills.sh](https://skills.sh/yangtech-gh/awesome-bug-bounty/awesome-bug-bounty).
+
+```bash
+# Preview what's in the repo
+npx skills@latest add YangTech-gh/Awesome-Bug-Bounty --list
+
+# Interactive install (pick skills + agents)
+npx skills@latest add YangTech-gh/Awesome-Bug-Bounty
+
+# Non-interactive: global, OpenCode only
+npx skills@latest add YangTech-gh/Awesome-Bug-Bounty \
+  --skill awesome-bug-bounty -a opencode -g -y
+```
+
+Later: `npx skills update` · `npx skills list` · `npx skills remove awesome-bug-bounty`.
+
+> [!NOTE]
+> `npx skills` installs the skill package only. The optional `@reference` aliases (deep fallback into 12 source repos) still need the opencode `references` block below.
+
+### Option B — manual opencode registration
 
 <details open>
 <summary><b>Install the skill in opencode</b> — click to collapse</summary>
@@ -70,16 +94,22 @@ Register in `~/.config/opencode/opencode.jsonc`:
     "@aw-junaid-bug-bounty": "https://github.com/aw-junaid/bug-bounty",
     "@hackerone-reports": "https://github.com/reddelexc/hackerone-reports",
     "@autorizepro": "https://github.com/WuliRuler/AutorizePro",
-    "@burp-api-security-suite": "https://github.com/Teycir/BurpAPISecuritySuite"
+    "@burp-api-security-suite": "https://github.com/Teycir/BurpAPISecuritySuite",
+    "@awesome-bugbounty-tools": "https://github.com/vavkamil/awesome-bugbounty-tools",
+    "@obscura": "https://github.com/h4ckf0r0day/obscura",
+    "@caido-skills": "https://github.com/caido/skills"
   }
 }
 ```
 
 ```bash
-# 2. Restart opencode (config is not hot-reloaded)
+# 2. Validate the skill package (paths, frontmatter, README links)
+python3 scripts/validate_skill.py
+
+# 3. Restart opencode (config is not hot-reloaded)
 ```
 
-**Triggers:** bug bounty · writeups · payloads · IDOR · business logic · SSRF · recon · HackerOne · API security · auth bypass · race conditions
+**Triggers:** bug bounty · writeups · payloads · IDOR · business logic · SSRF · recon · HackerOne · API security · auth bypass · race conditions · Burp alternatives · Caido · AI pentest agents · MCP security
 
 </details>
 
@@ -90,26 +120,32 @@ Register in `~/.config/opencode/opencode.jsonc`:
 
 ```
 Awesome-Bug-Bounty/
-├── README.md                            ← this file
-├── skills/
-│   └── awesome-bug-bounty/
-│       └── SKILL.md                     ← skill entry (rules, engage flow, routers)
-└── knowledge/
-    ├── vuln-types.md                    ← per-vuln hunt focus + patterns
-    ├── payloads.md                      ← payload / WAF bypass cheat sheet
-    ├── business-logic.md                ← 9 logic checks, payment matrix, races
-    ├── methodology.md                   ← recon pipeline, commands, reporting
-    └── tools.md                         ← AutorizePro, BurpAPISecuritySuite, bizlogic
+├── README.md                                 ← this file (human docs)
+├── scripts/
+│   └── validate_skill.py                     ← package integrity check
+└── skills/
+    └── awesome-bug-bounty/                   ← self-contained skill package
+        ├── SKILL.md                          ← source of truth (rules, gate, routers)
+        └── knowledge/
+            ├── vuln-types.md                 ← per-vuln hunt focus + patterns
+            ├── payloads.md                   ← payload / WAF bypass cheat sheet
+            ├── business-logic.md             ← 9 logic checks, payment matrix, races
+            ├── methodology.md                ← recon pipeline, commands, reporting
+            ├── tools.md                      ← tool matrix, proxies, AI hunters, MCP
+            └── install.md                    ← copy-paste install cmds for every tool
 ```
+
+The skill is **self-contained**: `knowledge/` lives inside the skill directory, so progressive disclosure works wherever the skill is installed. The `skills/<name>/SKILL.md` layout is what the [`skills` CLI](https://github.com/vercel-labs/skills) discovers — install with `npx skills add YangTech-gh/Awesome-Bug-Bounty` (Option A above), or register `skills/` via opencode `skills.paths` and symlink/copy into `~/.config/opencode/skills/`.
 
 | File | Role |
 |---|---|
-| [`skills/awesome-bug-bounty/SKILL.md`](skills/awesome-bug-bounty/SKILL.md) | Operating rules, category router, vuln index, fallback table |
-| [`knowledge/vuln-types.md`](knowledge/vuln-types.md) | Hunt focus for 30+ classes (XSS → smuggling → GraphQL) |
-| [`knowledge/payloads.md`](knowledge/payloads.md) | Context matrix, injection payloads, 401/403 bypass list |
-| [`knowledge/business-logic.md`](knowledge/business-logic.md) | bizlogic 9 checks, payment attacks, state machines, races |
-| [`knowledge/methodology.md`](knowledge/methodology.md) | Recon stages, impact ranking, wordlists, report template |
-| [`knowledge/tools.md`](knowledge/tools.md) | Burp extensions + bizlogic workflow + complementary stack |
+| [`skills/awesome-bug-bounty/SKILL.md`](skills/awesome-bug-bounty/SKILL.md) | **Source of truth:** operating rules, profile gate, engage flow, category router, fallback table |
+| [`knowledge/vuln-types.md`](skills/awesome-bug-bounty/knowledge/vuln-types.md) | Hunt focus for 30+ classes (XSS → smuggling → GraphQL) |
+| [`knowledge/payloads.md`](skills/awesome-bug-bounty/knowledge/payloads.md) | Context matrix, injection payloads, 401/403 bypass list |
+| [`knowledge/business-logic.md`](skills/awesome-bug-bounty/knowledge/business-logic.md) | bizlogic 9 checks, payment attacks, state machines, races |
+| [`knowledge/methodology.md`](skills/awesome-bug-bounty/knowledge/methodology.md) | Recon stages, impact ranking, best practices, non-duplicated engagement path, wordlists, report template |
+| [`knowledge/tools.md`](skills/awesome-bug-bounty/knowledge/tools.md) | Tool-choice matrix · Caido/ZAP · AI hunters · Obscura · MCP stack · Burp extensions |
+| [`knowledge/install.md`](skills/awesome-bug-bounty/knowledge/install.md) | Install commands + post-install setup (API keys, proxy CA, MCP registration cookbook), health check |
 
 </details>
 
@@ -126,7 +162,7 @@ flowchart TB
     LOCAL --> RPT["Impact-first report"]
     REF --> RPT
 
-    subgraph KNO [Local knowledge]
+    subgraph KNO [Local knowledge — inside skill package]
         VT[vuln-types.md]
         PL[payloads.md]
         BL[business-logic.md]
@@ -134,13 +170,15 @@ flowchart TB
         TO[tools.md]
     end
 
-    subgraph FB [Fallback refs 9 repos]
+    subgraph FB [Fallback refs 12 repos]
         R1["@awesome-bb-writeups"]
         R2["@payloads-all-the-things"]
         R3["@hackerone-reports"]
         R4["@bizlogic"]
         R5["@burp-api-security-suite"]
-        R6["+4 more"]
+        R6["@obscura"]
+        R7["@caido-skills"]
+        R8["+5 more"]
     end
 
     SK --> KNO
@@ -152,9 +190,9 @@ flowchart TB
     style LOCAL fill:#1f6feb,color:#fff,stroke:#58a6ff
 ```
 
-**Operating rules**
+**Operating rules** (authoritative copy in [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md))
 
-1. Prefer local distilled knowledge first (`knowledge/*.md`).
+1. Prefer local distilled knowledge first (`knowledge/*.md` inside the skill).
 2. Fall back to `@references` only for writeup links, full payload lists, tool internals.
 3. Authorized testing only — program scope + ROE.
 4. Evidence standard: clear impact · minimal repro · PoC req/res · severity · fix guidance.
@@ -162,6 +200,8 @@ flowchart TB
 ---
 
 ## Engage flow (impact-first)
+
+Authoritative flow: [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md) → *Engage flow*.
 
 | Step | Action | Done when |
 |:---:|---|---|
@@ -183,39 +223,23 @@ RCE / SQLi (data dump)  >  Auth bypass / ATO  >  SSRF (cloud metadata)
 
 ## Skill router
 
-Symptom → knowledge file → primary fallback. Click rows mentally: every surface has a path.
+**The authoritative category router lives in [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md) → *Category router*** (kept lean so the agent loads less per session). Quick map:
 
-<details open>
-<summary><b>Full category router</b> (16 surfaces) — collapse to skim</summary>
-
-<br/>
-
-| # | Symptom / surface | Knowledge | Primary fallback |
-|:-:|---|---|---|
-| 1 | Reflected / stored / DOM / blind XSS, CSP bypass | [`vuln-types`](knowledge/vuln-types.md) | Awesome-Bugbounty-Writeups · PayloadsAllTheThings |
-| 2 | SQLi, NoSQLi, interpreter injection | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
-| 3 | SSRF, cloud metadata, DNS rebinding | [`vuln-types`](knowledge/vuln-types.md) | PayloadsAllTheThings · HackerOne TOPSSRF |
-| 4 | IDOR / BOLA / broken object authz | [`vuln-types`](knowledge/vuln-types.md) · [`tools`](knowledge/tools.md) | AutorizePro · BurpAPISecuritySuite · bug-bounty-reference |
-| 5 | Auth bypass, 2FA/MFA, OAuth/JWT/SAML, ATO | [`vuln-types`](knowledge/vuln-types.md) | bug-bounty-reference · hack-skills auth-sec |
-| 6 | Business logic (pricing, coupons, workflow, stock, limits) | [`business-logic`](knowledge/business-logic.md) | hack-skills · bizlogic |
-| 7 | Race conditions / TOCTOU | [`business-logic`](knowledge/business-logic.md) | PayloadsAllTheThings · TOPRACECONDITION |
-| 8 | CSRF, CORS, clickjacking, open redirect | [`vuln-types`](knowledge/vuln-types.md) | Awesome-Bugbounty-Writeups |
-| 9 | RCE, deserialization, SSTI, template injection | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
-| 10 | File upload, LFI/RFI, path traversal | [`vuln-types`](knowledge/vuln-types.md) · [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
-| 11 | API recon, GraphQL, REST, mass assignment | [`methodology`](knowledge/methodology.md) · [`tools`](knowledge/tools.md) | BurpAPISecuritySuite · hack-skills api-sec |
-| 12 | Subdomain takeover, cache deception, smuggling | [`vuln-types`](knowledge/vuln-types.md) | PayloadsAllTheThings · bug-bounty-reference |
-| 13 | Payload / WAF bypass by context | [`payloads`](knowledge/payloads.md) | PayloadsAllTheThings |
-| 14 | Recon, wordlists, cheatsheets, report templates | [`methodology`](knowledge/methodology.md) | aw-junaid/bug-bounty |
-| 15 | Top disclosed reports / program patterns | [`vuln-types`](knowledge/vuln-types.md) | hackerone-reports `docs/tops_*` |
-| 16 | Tooling: authz testing, API fuzzing, logic scan | [`tools`](knowledge/tools.md) | AutorizePro · BurpAPISecuritySuite · bizlogic |
-
-</details>
+| Surface group | Knowledge file |
+|---|---|
+| Most vuln classes (XSS, SQLi, SSRF, smuggling, takeover, …) + payloads/WAF bypass | [`vuln-types`](skills/awesome-bug-bounty/knowledge/vuln-types.md) · [`payloads`](skills/awesome-bug-bounty/knowledge/payloads.md) |
+| IDOR/BOLA, API recon, GraphQL, mass assignment | [`vuln-types`](skills/awesome-bug-bounty/knowledge/vuln-types.md) · [`methodology`](skills/awesome-bug-bounty/knowledge/methodology.md) · [`tools`](skills/awesome-bug-bounty/knowledge/tools.md) |
+| Auth bypass, 2FA/MFA, OAuth/JWT/SAML, ATO | [`vuln-types`](skills/awesome-bug-bounty/knowledge/vuln-types.md) |
+| Business logic, race conditions / TOCTOU | [`business-logic`](skills/awesome-bug-bounty/knowledge/business-logic.md) |
+| Recon, wordlists, engagement workspace, report template, SPA browsing | [`methodology`](skills/awesome-bug-bounty/knowledge/methodology.md) · [`tools`](skills/awesome-bug-bounty/knowledge/tools.md) |
+| Proxy/scanner/AI-hunter/MCP tool choice, agent orchestration | [`tools`](skills/awesome-bug-bounty/knowledge/tools.md) |
+| Install commands, API keys, proxy CA, MCP registration | [`install`](skills/awesome-bug-bounty/knowledge/install.md) |
 
 ---
 
 ## Knowledge base
 
-Five local playbooks. Expand each for the full index.
+Five local playbooks plus an install guide. Expand each for the full index.
 
 <details>
 <summary><b>vuln-types.md</b> — hunt focus & patterns (30+ classes)</summary>
@@ -251,7 +275,7 @@ Five local playbooks. Expand each for the full index.
 | **Supply chain** | Dependency confusion · typosquat · lockfile | registry boundary tests |
 | **Email / CRLF / header** | SMTP injection · log forge · response split | host header → link forge |
 
-**Full narrative + fallback paths:** [`knowledge/vuln-types.md`](knowledge/vuln-types.md)
+**Full narrative + fallback paths:** [`knowledge/vuln-types.md`](skills/awesome-bug-bounty/knowledge/vuln-types.md)
 
 </details>
 
@@ -302,7 +326,7 @@ Five local playbooks. Expand each for the full index.
 
 </details>
 
-**Race snippet (Turbo Intruder):** see [`knowledge/payloads.md`](knowledge/payloads.md)
+**Race snippet (Turbo Intruder):** see [`knowledge/payloads.md`](skills/awesome-bug-bounty/knowledge/payloads.md)
 
 **Full lists:** fetch `@payloads-all-the-things` → category `README.md`
 
@@ -370,21 +394,37 @@ dalfox url 'https://t/?q=x' --pipe
 </details>
 
 <details>
-<summary><b>tools.md</b> — AutorizePro · BurpAPISecuritySuite · bizlogic</summary>
+<summary><b>tools.md</b> — tool-choice matrix · Burp alternatives · AI hunters · Obscura · MCP</summary>
 
 <br/>
 
-| Tool | What it does | Statuses / output |
-|---|---|---|
-| **AutorizePro** | Authz enforcement replay (low-priv headers vs high-priv session) + optional AI triage | `Bypassed!` · `Enforced!` · `Is enforced???` · HTML/CSV export |
-| **BurpAPISecuritySuite** | API recon, 15 attack types, BOLA/IDOR, multi-role auth replay, Nuclei/Katana/FFUF | AI Bundle · Passive Discovery · Verify (sqlmap/dalfox) |
-| **bizlogic** | Same-origin crawl → 9 heuristics → optional safe exploitation (max 5/finding) | text/JSON/HTML + Nuclei templates under `reports/` |
+**Tool-choice matrix (headline)**
 
-**AutorizePro flow:** paste 2nd-account headers → optional AI endpoint → browse with high-priv session → always set Interception Filters (scope!) to avoid cookie leakage.
+| Need | Pick |
+|---|---|
+| Manual proxy/replay default | **Caido** (free multi-project, HTTPQL, AI SDK/skill) or Burp Community |
+| Active scan + OAST | Burp Pro / **ZAP** + nuclei (Caido lacks Collaborator) |
+| Known-CVE sweep | nuclei + custom templates |
+| SPA rendering / agent browsing | **Obscura** (Rust CDP+MCP headless browser, stealth) |
+| Agent-run recon from chat | MCP: HexStrike · pd-tools-mcp · mcp-bb (scope-enforced) · BugHound · MoonMCP |
+| Autonomous hunt w/ proof | Evidence-first: **AI Scanner** (deterministic oracles) · **VERDICT** · **ptai** (proof capsules) · Xalgorix (independent verifier) · AOBTD · SIPHON |
+| Scripted interception | mitmproxy |
 
-**bizlogic:** `pip install requests beautifulsoup4 && python bizlogic_scanner.py`
+**Rule:** proxy for depth → nuclei for breadth → AI hunters for orchestration → **human-verify before reporting** (oracle/replay-verified findings only).
 
-**Complementary stack:** subfinder → httpx → katana → ffuf → nuclei → sqlmap/dalfox → AutorizePro / Auth Replay → bizlogic + manual state machines.
+**Burp alternatives:** Caido (AI-native: official Client SDK + `caido/skills`, Shift plugin — Burp is not AI-native), ZAP (free full DAST + YAML automation), mitmproxy (programmatic). Burp still wins on BApp ecosystem, Scanner, Collaborator.
+
+**Obscura fit:** SPA crawl, `browser_evaluate` DOM-XSS confirmation, MCP-driven authenticated flows, stealth recon — pairs with a proxy, never a scanner replacement.
+
+**New surface:** MCP/LLM app testing — MCPScan, mcpsec, mcpwn, Burp MCP-server-scanner extension, AI Scanner prompt-injection canaries (OWASP LLM/MCP Top 10).
+
+**Legacy core:** AutorizePro (authz replay + AI triage) · BurpAPISecuritySuite (15 API attack types) · bizlogic (9 heuristics) · complementary ProjectDiscovery stack.
+
+**Install everything:** [`knowledge/install.md`](skills/awesome-bug-bounty/knowledge/install.md) — copy-paste `go install` / `pipx` / Docker / release-binary commands for the full stack, plus §9 one-shot core block, §10 health check, **§11 API-key/setup table**, **§12 MCP registration cookbook**, §13 done-when checklist.
+
+**Operating profile gate** (authoritative: [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md)): first use with no user rules → **one** `question` — `Defaults — Stealth` (recommended, applied immediately) or `Configure…` (mode · LLM backend · tool layers · install policy · MCP surface) → persisted to `engagements/<target>/profile.yaml`; everything after obeys it.
+
+**No duplicate work:** [`knowledge/methodology.md`](skills/awesome-bug-bounty/knowledge/methodology.md) → *Non-duplicated engagement path* — one `scope.yaml` per program → one asset inventory → one URL/API corpus → tools fan out over shared files → findings deduped by `METHOD+host+path+param+class` → one report per issue. Plus 11 best practices (scope-first, rate limits, evidence-first, MCP surface minimization).
 
 </details>
 
@@ -392,34 +432,39 @@ dalfox url 'https://t/?q=x' --pipe
 
 ## Vulnerability coverage
 
-34 classes indexed in the skill (detail in [`knowledge/vuln-types.md`](knowledge/vuln-types.md)):
+42 classes indexed in the skill (detail in [`knowledge/vuln-types.md`](skills/awesome-bug-bounty/knowledge/vuln-types.md)):
 
 <details open>
 <summary>Expand the full tag list</summary>
 
 <br/>
 
-`XSS (R/S/DOM/blind/XSSI)` · `SQLi` · `NoSQLi` · `SSRF` · `XXE` · `IDOR/BOLA` · `CSRF` · `CORS` · `Auth bypass/ATO` · `2FA/MFA bypass` · `OAuth` · `JWT` · `SAML` · `Race condition` · `Business logic` · `RCE` · `Deserialization` · `SSTI` · `Command injection` · `File upload` · `LFI/RFI` · `Path traversal` · `Open redirect` · `Clickjacking` · `Subdomain takeover` · `Web cache deception` · `Web cache poisoning` · `HTTP request smuggling` · `CRLF/header injection` · `Host header attacks` · `Prototype pollution` · `GraphQL abuse` · `Mass assignment` · `API key leaks` · `Info disclosure/secrets` · `DoS` · `Email/header injection` · `Supply chain/dependency confusion` · `WebSocket hijacking` · `401/403 bypass` · `SAML/SSO abuse`
+`XSS (R/S/DOM/blind/XSSI)` · `SQLi` · `NoSQLi` · `SSRF` · `XXE` · `IDOR/BOLA` · `CSRF` · `CORS` · `Auth bypass/ATO` · `2FA/MFA bypass` · `OAuth` · `JWT` · `SAML` · `Race condition` · `Business logic` · `RCE` · `Deserialization` · `SSTI` · `Command injection` · `File upload` · `LFI/RFI` · `Path traversal` · `Open redirect` · `Clickjacking` · `Subdomain takeover` · `Web cache deception` · `Web cache poisoning` · `HTTP request smuggling` · `CRLF/header injection` · `Host header attacks` · `Prototype pollution` · `GraphQL abuse` · `Mass assignment` · `API key leaks` · `Info disclosure/secrets` · `DoS` · `Email/header injection` · `Supply chain/dependency confusion` · `WebSocket hijacking` · `401/403 bypass` · `SAML/SSO abuse` · `Prompt injection / LLM app flaws` · `MCP server abuse`
 
 </details>
 
 ---
 
-## Knowledge sources
+## Knowledge sources & fallback references
 
-Nine upstream repos merged into this skill. Each row = what we took + what we still fall back for.
+Twelve upstream repos: merged into local knowledge, with a live fallback when you need links, full catalogs, or tool source. (One table — the alias list in [`SKILL.md`](skills/awesome-bug-bounty/SKILL.md) mirrors it for the agent.)
 
-| # | Repository | Merged into local knowledge | Fallback when you need… | Alias |
+| # | Repository | Merged into local knowledge | Fallback when you need… | Alias · example deep path |
 |:-:|---|---|---|---|
-| 1 | [Awesome-Bugbounty-Writeups](https://github.com/devanshbatham/Awesome-Bugbounty-Writeups) | vuln index by bug type | full writeup link lists | `@awesome-bb-writeups` |
-| 2 | [bug-bounty-reference](https://github.com/ngalongc/bug-bounty-reference) | writeups by nature (OAuth, money, XSSI) | historical categorized writeups | `@bug-bounty-reference` |
-| 3 | [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) | payload/bypass cheat sheet | complete category READMEs (64+) | `@payloads-all-the-things` |
-| 4 | [hack-skills · business-logic](https://github.com/yaklang/hack-skills/tree/main/skills/business-logic-vulnerabilities) | payment matrix, state machines, races | deep skill playbooks (auth, recon, api-sec…) | `@hack-skills` |
-| 5 | [bizlogic](https://github.com/ekomsSavior/bizlogic) | 9 heuristic checks + safe exploit flow | scanner source / check defs | `@bizlogic` |
-| 6 | [aw-junaid/bug-bounty](https://github.com/aw-junaid/bug-bounty) | recon pipeline, cheatsheets, templates | wordlists + tool automation scripts | `@aw-junaid-bug-bounty` |
-| 7 | [hackerone-reports](https://github.com/reddelexc/hackerone-reports) | top-report index pointers | `docs/tops_by_bug_type` · `docs/tops_by_program` | `@hackerone-reports` |
-| 8 | [AutorizePro](https://github.com/WuliRuler/AutorizePro) | authz test workflow + AI triage notes | extension config/source details | `@autorizepro` |
-| 9 | [BurpAPISecuritySuite](https://github.com/Teycir/BurpAPISecuritySuite) | API suite workflow (15 attack types) | tabs, exports, integration flags | `@burp-api-security-suite` |
+| 1 | [Awesome-Bugbounty-Writeups](https://github.com/devanshbatham/Awesome-Bugbounty-Writeups) | vuln index by bug type | full writeup link lists | `@awesome-bb-writeups` · XSS / IDOR / SSRF sections |
+| 2 | [bug-bounty-reference](https://github.com/ngalongc/bug-bounty-reference) | writeups by nature (OAuth, money, XSSI) | historical categorized writeups | `@bug-bounty-reference` · `#IDOR` · `#Authentication-Bypass` |
+| 3 | [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) | payload/bypass cheat sheet | complete category READMEs (64+) | `@payloads-all-the-things` · `SQL Injection/README.md` |
+| 4 | [hack-skills · business-logic](https://github.com/yaklang/hack-skills/tree/main/skills/business-logic-vulnerabilities) | payment matrix, state machines, races | deep skill playbooks (auth, recon, api-sec…) | `@hack-skills` · `skills/business-logic-vulnerabilities/` |
+| 5 | [bizlogic](https://github.com/ekomsSavior/bizlogic) | 9 heuristic checks + safe exploit flow | scanner source / check defs | `@bizlogic` · `bizlogic_scanner.py` |
+| 6 | [aw-junaid/bug-bounty](https://github.com/aw-junaid/bug-bounty) | recon pipeline, cheatsheets, templates | wordlists + tool automation scripts | `@aw-junaid-bug-bounty` · methodologies · wordlists |
+| 7 | [hackerone-reports](https://github.com/reddelexc/hackerone-reports) | top-report index pointers | by bug type + by program | `@hackerone-reports` · `docs/tops_by_bug_type/TOPSSRF.md` |
+| 8 | [AutorizePro](https://github.com/WuliRuler/AutorizePro) | authz test workflow + AI triage notes | extension config/source details | `@autorizepro` · `AutorizePro.py` |
+| 9 | [BurpAPISecuritySuite](https://github.com/Teycir/BurpAPISecuritySuite) | API suite workflow (15 attack types) | tabs, exports, integration flags | `@burp-api-security-suite` · tabs · export formats |
+| 10 | [awesome-bugbounty-tools](https://github.com/vavkamil/awesome-bugbounty-tools) | tool routing by phase (incl. AI Agents index) | full curated list per category | `@awesome-bugbounty-tools` · `#ai-agents` |
+| 11 | [obscura](https://github.com/h4ckf0r0day/obscura) | agent-browser fit notes (CDP/MCP/stealth) | CLI reference, MCP tools, wiki architecture | `@obscura` · `docs/Use-the-MCP-server.md` |
+| 12 | [caido/skills](https://github.com/caido/skills) | AI-native proxy workflow notes | SDK API surface, skill tool definitions | `@caido-skills` · SDK tool definitions |
+
+> Rule of thumb: **distilled local knowledge first → fetch `@reference` only when you need links, full payload catalogs, or tool source.**
 
 ---
 
@@ -433,9 +478,13 @@ Nine upstream repos merged into this skill. Each row = what we took + what we st
 | Platform | Focus / notes |
 |---|---|
 | [HackerOne](https://www.hackerone.com) | Largest marketplace; archive → [hackerone-reports](https://github.com/reddelexc/hackerone-reports) `docs/tops_*` |
-| [Bugcrowd](https://www.bugcrowd.com) | Crowdsourced + private programs |
-| [Intigriti](https://www.intigriti.com) | EU-heavy · monthly XSS challenges |
-| [YesWeHack](https://www.yeswehack.com) | EU VDP / bug bounty |
+| [Bugcrowd](https://www.bugcrowd.com) | Crowdsourced + managed triage, private programs |
+| [Intigriti](https://www.intigriti.com) | EU-heavy · beginner-friendly · monthly XSS challenges |
+| [YesWeHack](https://www.yeswehack.com) | EU VDP / bug bounty · managed triage · Dojo training |
+| [Immunefi](https://immunefi.com) | Web3 / smart contracts · highest critical payouts (up to $10M+) |
+| [Synack](https://www.synack.com) | Invite-only vetted Red Team · FedRAMP/gov · high payouts |
+| [HackenProof](https://hackenproof.com) | Mixed Web2 + Web3 crypto programs |
+| [Open Bug Bounty](https://www.openbugbounty.org) | Public disclosure, no guaranteed payout — portfolio building |
 | [Google VRP](https://bughunters.google.com) | Android · Google · Abuse · high payouts |
 | [Microsoft MSRC](https://www.microsoft.com/msrc) | Azure / Windows / Office |
 | [Apple Security](https://security.apple.com) | iOS / macOS / services |
@@ -509,34 +558,14 @@ OWASP / CWE / writeup links.
 
 ---
 
-## Fallback references — deep research
-
-After config registration, ask opencode with these aliases (or open the GitHub paths directly):
-
-| Alias | Repo | Example deep path |
-|---|---|---|
-| `@awesome-bb-writeups` | Awesome-Bugbounty-Writeups | XSS / IDOR / SSRF sections |
-| `@bug-bounty-reference` | bug-bounty-reference | `#IDOR` · `#Authentication-Bypass` |
-| `@payloads-all-the-things` | PayloadsAllTheThings | `SQL Injection/README.md` |
-| `@hack-skills` | hack-skills | `skills/business-logic-vulnerabilities/` |
-| `@bizlogic` | bizlogic | `bizlogic_scanner.py` · check defs |
-| `@aw-junaid-bug-bounty` | aw-junaid/bug-bounty | methodologies · cheatsheets · wordlists |
-| `@hackerone-reports` | hackerone-reports | `docs/tops_by_bug_type/TOPSSRF.md` |
-| `@autorizepro` | AutorizePro | `AutorizePro.py` config |
-| `@burp-api-security-suite` | BurpAPISecuritySuite | tabs · export formats |
-
-> Rule of thumb: **distilled local knowledge first → fetch `@reference` only when you need links, full payload catalogs, or tool source.**
-
----
-
 ## Interactive index (jump)
 
 | | | | |
 |---|---|---|---|
 | [Quick start](#-quick-start) | [Architecture](#-architecture) | [Engage flow](#-engage-flow-impact-first) | [Skill router](#-skill-router) |
-| [Knowledge base](#-knowledge-base) | [Coverage](#-vulnerability-coverage) | [Sources](#-knowledge-sources) | [Payloads](#-payload--bypass-cheat-sheet) |
+| [Knowledge base](#-knowledge-base) | [Coverage](#-vulnerability-coverage) | [Sources](#knowledge-sources--fallback-references) | [Payloads](#-payload--bypass-cheat-sheet) |
 | [Business logic](#-business-logic--race-conditions) | [Methodology](#-methodology-recon--reporting) | [Tooling](#-tooling) | [Programs](#-programs--platforms) |
-| [Report template](#-report-template) | [Fallback refs](#-fallback-references--deep-research) | [License](#-license) | [Back to top](#awesome-bug-bounty) |
+| [Report template](#-report-template) | [Quick start](#-quick-start) | [License](#-license) | [Back to top](#awesome-bug-bounty) |
 
 ---
 
