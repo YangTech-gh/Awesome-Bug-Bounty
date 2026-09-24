@@ -287,7 +287,7 @@ subfinder -version && httpx -version && nuclei -version
 
 ```jsonc
 // Paths below use $HOME — replace with your actual checkout dir if different
-// (e.g. $HOME/tools/pd-tools-mcp). Never hardcode /home/<user> or /opt/.
+// (e.g. $HOME/tools/pd-tools-mcp). Never hardcode absolute user paths or system dirs.
 "mcp": {
   // Recon hands (needs §1 binaries on PATH; build emits build/index.js, not dist/)
   "pd-tools":   { "type": "local", "command": ["node", "$HOME/tools/pd-tools-mcp/build/index.js"], "enabled": true },
